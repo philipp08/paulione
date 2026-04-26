@@ -110,15 +110,14 @@ export function Header() {
             scrolled
               ? "bg-[#0A0A0A]/80 backdrop-blur-[8px] border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               : "bg-transparent border-transparent"
-          } rounded-[24px] px-6 py-3`}
+          } rounded-full px-6 py-3`}
         >
           <Link href="/" className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            <div className="flex items-center gap-2">
-              <span className="pone-logo-pauli">PAULI</span>
-              <span className="pone-logo-block">
-                <span className="pone-logo-one">ONE</span>
-              </span>
-            </div>
+            <img
+              src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
+              alt="PauliONE"
+              className="h-6 w-auto object-contain invert brightness-0"
+            />
           </Link>
 
           {/* Desktop Nav Items */}
@@ -242,12 +241,11 @@ export function Header() {
           {/* Top Bar (Always Visible) */}
           <div className="flex items-center justify-between px-4 py-3 relative z-10 w-full">
             <Link href="/" className="flex items-center gap-3 pl-2 transition-transform hover:scale-[1.02] active:scale-[0.98]" onClick={() => setMobileOpen(false)}>
-              <div className="flex items-center gap-2">
-                <span className="pone-logo-pauli">PAULI</span>
-                <span className="pone-logo-block">
-                  <span className="pone-logo-one">ONE</span>
-                </span>
-              </div>
+              <img
+                src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
+                alt="PauliONE"
+                className="h-5 w-auto object-contain invert brightness-0"
+              />
             </Link>
 
             <div className="flex items-center gap-2">
