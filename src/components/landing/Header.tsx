@@ -116,7 +116,7 @@ export function Header() {
             <img
               src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
               alt="PauliONE"
-              className="h-6 w-auto object-contain invert"
+              className="h-6 w-auto object-contain"
             />
           </Link>
 
@@ -244,7 +244,7 @@ export function Header() {
               <img
                 src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
                 alt="PauliONE"
-                className="h-5 w-auto object-contain invert"
+                className="h-5 w-auto object-contain"
               />
             </Link>
 
