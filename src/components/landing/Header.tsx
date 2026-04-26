@@ -1,460 +1,463 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { ArrowRight, Menu as MenuIcon, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-/* ── Data ─────────────────────────────────────────────────────── */
+interface MenuItem {
+  title: string;
+  description?: string;
+  href: string;
+}
 
-const services = [
-  { num: "01", title: "Webauftritt",             sub: "Website, Onlineshop oder Re-design",      href: "/webauftritt" },
-  { num: "02", title: "Marketing & Strategie",   sub: "Advertising, Social Media Marketing",     href: "/marketing-und-strategie" },
-  { num: "03", title: "Design & Markenauftritt", sub: "Logo, Werbemittel, Corporate Design",     href: "/design-und-markenauftritt" },
-  { num: "04", title: "Abomodell",               sub: "All-In-One Projekte im Abomodell",        href: "/abomodell" },
-  { num: "05", title: "Website-Service",         sub: "Instandhaltung Ihrer Website o. Onlineshop", href: "/service" },
-];
+interface FeaturedContent {
+  label: string;
+  title: string;
+  cta: string;
+  ctaHref: string;
+}
 
-const tickerProjects = [
-  { name: "EMA Immobilien",      cat: "Webauftritt" },
-  { name: "MK Nailshop",         cat: "Design & Webauftritt" },
-  { name: "Einklang by Kirsten", cat: "Markenauftritt" },
-  { name: "Müller Vermietungen", cat: "Webauftritt" },
-  { name: "ShiGlauer",           cat: "Design & Markenauftritt" },
-  { name: "Rastetten",           cat: "Webauftritt" },
-];
+interface Menu {
+  label: string;
+  href: string;
+  items?: MenuItem[];
+  featured?: FeaturedContent;
+}
 
-// Triple the list for seamless infinite scroll
-const tickerItems = [...tickerProjects, ...tickerProjects, ...tickerProjects];
-
-const testimonials = [
-  {
-    text: "Alles was ich mir mit meinem Online Shop vorgestellt habe wurde umgesetzt! Immer hilfsbereit, zuverlässig, kompetent, freundlich. Kann ich nur weiter empfehlen!",
-    name: "K. Mekkel", company: "MK Nailshop",
-  },
-  {
-    text: "Ich kann PauliONE uneingeschränkt weiter empfehlen. Mit einer Engelsgeduld alles umgesetzt was ich wollte – Preis, Leistung, Service alles TOP.",
-    name: "Kirsten Asal", company: "Einklang by Kirsten",
-  },
-  {
-    text: "Sehr kompetente Beratung mit sehr viel Engagement beim Gestalten und Umsetzen der Homepage – absolut empfehlenswert in jeder Hinsicht.",
-    name: "Marco Mueller", company: "Kunde",
-  },
-  {
-    text: "Toller und sehr engagierter Service. Philipp hat für uns Online-Marketingkampagnen erstellt – mit großem Erfolg und überschaubaren Werbekosten.",
-    name: "St. Leuschner", company: "Immohaus Baden",
-  },
-];
-
-/* ── Component ────────────────────────────────────────────────── */
+const DropdownArrow = ({ isOpen }: { isOpen: boolean }) => (
+  <i className={`ml-1.5 flex transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>
+    <svg className="w-3.5 h-3.5" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 17">
+      <path d="m5.332 7.167 2.667 2.666 2.666-2.666" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+    </svg>
+  </i>
+);
 
 export function Header() {
-  const [megaOpen, setMegaOpen]   = useState(false);
-  const [mobOpen,  setMobOpen]    = useState(false);
-  const [mobSubOpen, setMobSubOpen] = useState(false);
-  const [testiIdx, setTestiIdx]   = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const tickerRef     = useRef<HTMLDivElement>(null);
-  const stepRef       = useRef(0);
-  const animRef       = useRef(false);
-  const pauseRef      = useRef(false);
-
-  /* Mega menu hover */
-  const openMega = useCallback(() => {
-    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-    setMegaOpen(true);
-  }, []);
-
-  const scheduleMegaClose = useCallback(() => {
-    closeTimerRef.current = setTimeout(() => setMegaOpen(false), 180);
-  }, []);
-
-  /* Close on outside click */
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      const t = e.target as Node;
-      const mega = document.getElementById("pone-mega-dl");
-      const niDl = document.getElementById("pone-ni-dl");
-      if (!mega?.contains(t) && !niDl?.contains(t)) setMegaOpen(false);
-    };
-    document.addEventListener("click", handler);
-    return () => document.removeEventListener("click", handler);
+    setMounted(true);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Escape closes everything */
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setMegaOpen(false); setMobOpen(false); }
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, []);
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [mobileOpen]);
 
-  /* Lock body scroll when mobile menu open */
-  useEffect(() => {
-    document.body.style.overflow = mobOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [mobOpen]);
+  const handleMouseEnter = (label: string) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setActiveMenu(label);
+  };
 
-  /* Testimonial auto-rotate */
-  useEffect(() => {
-    const id = setInterval(
-      () => setTestiIdx(i => (i + 1) % testimonials.length),
-      4000
-    );
-    return () => clearInterval(id);
-  }, []);
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setActiveMenu(null), 150);
+  };
 
-  /* Project ticker step scroll */
-  useEffect(() => {
-    const ticker = tickerRef.current;
-    if (!ticker) return;
+  const toggleMobileExpanded = (label: string) => {
+    setMobileExpanded((prev) => (prev === label ? null : label));
+  };
 
-    const items = ticker.querySelectorAll<HTMLElement>(".pone-ticker-item");
-    if (!items.length) return;
+  const menus: Menu[] = [
+    { label: "Startseite", href: "/" },
+    { label: "Über mich", href: "/ueber-mich" },
+    { label: "Projekte", href: "/referenzen" },
+    {
+      label: "Dienstleistungen",
+      href: "#",
+      items: [
+        { title: "Webauftritt", description: "Website, Onlineshop oder Re-design", href: "/webauftritt" },
+        { title: "Marketing & Strategie", description: "Advertising, Social Media Marketing", href: "/marketing-und-strategie" },
+        { title: "Design & Markenauftritt", description: "Logo, Werbemittel, Corporate Design", href: "/design-und-markenauftritt" },
+        { title: "Abomodell", description: "All-In-One Projekte im Abomodell", href: "/abomodell" },
+        { title: "Website-Service", description: "Instandhaltung Ihrer Website o. Onlineshop", href: "/service" },
+      ],
+      featured: {
+        label: "LASSEN SIE UNS STARTEN",
+        title: "Bereit für den nächsten Schritt in der digitalen Welt?",
+        cta: "Kostenloses Erstgespräch",
+        ctaHref: "/anfrage",
+      },
+    },
+    { label: "Kontakt", href: "/kontakt" },
+  ];
 
-    const itemH       = items[0].getBoundingClientRect().height || 34;
-    const totalItems  = tickerProjects.length; // one third
-
-    ticker.style.transition = "none";
-    ticker.style.transform  = "translateY(0)";
-
-    const id = setInterval(() => {
-      if (pauseRef.current || animRef.current) return;
-      animRef.current = true;
-      stepRef.current++;
-
-      ticker.style.transition = "transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-      ticker.style.transform  = `translateY(-${stepRef.current * itemH}px)`;
-
-      setTimeout(() => {
-        if (stepRef.current >= totalItems) {
-          stepRef.current = 0;
-          ticker.style.transition = "none";
-          ticker.style.transform  = "translateY(0)";
-          requestAnimationFrame(() =>
-            requestAnimationFrame(() => {
-              ticker.style.transition = "transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-            })
-          );
-        }
-        animRef.current = false;
-      }, 580);
-    }, 2200);
-
-    return () => clearInterval(id);
-  }, []);
+  if (!mounted) return null;
 
   return (
     <>
-      {/* ── Logo ──────────────────────────────────────────────── */}
-      <div className="pone-logo-wrap">
-        <Link href="https://www.pauli-one.de" className="pone-logo" aria-label="PauliONE">
-          <span className="pone-logo-pauli">PAULI</span>
-          <span className="pone-logo-block">
-            <span className="pone-logo-one">ONE</span>
-          </span>
-        </Link>
-      </div>
-
-      {/* ── Burger (mobile) ───────────────────────────────────── */}
-      <div className="pone-burger-wrap">
-        <button
-          className={`pone-burger-btn${mobOpen ? " open" : ""}`}
-          aria-label={mobOpen ? "Menü schließen" : "Menü öffnen"}
-          aria-expanded={mobOpen}
-          onClick={() => setMobOpen(v => !v)}
-        >
-          <span className="pone-bl pone-bl1" />
-          <span className="pone-bl pone-bl2" />
-          <span className="pone-bl pone-bl3" />
-        </button>
-      </div>
-
-      {/* ── Desktop nav ───────────────────────────────────────── */}
-      <div className="pone-nav-links-wrap">
-        <ul className="pone-nav-desktop">
-          <li className="pone-nav-item">
-            <Link href="https://www.pauli-one.de">Startseite</Link>
-          </li>
-          <li className="pone-nav-item">
-            <Link href="/ueber-mich">Über mich</Link>
-          </li>
-          <li className="pone-nav-item">
-            <Link href="/referenzen">Projekte</Link>
-          </li>
-          <li
-            id="pone-ni-dl"
-            className={`pone-nav-item${megaOpen ? " mega-open" : ""}`}
-            onMouseEnter={openMega}
-            onMouseLeave={scheduleMegaClose}
-          >
-            <button
-              aria-expanded={megaOpen}
-              aria-controls="pone-mega-dl"
-            >
-              Dienstleistungen <span className="pone-nav-chevron" />
-            </button>
-          </li>
-          <li className="pone-nav-item">
-            <Link href="/kontakt">Kontakt</Link>
-          </li>
-        </ul>
-      </div>
-
-      {/* ── Desktop CTA ───────────────────────────────────────── */}
-      <div className="pone-nav-cta-wrap">
-        <Link href="/anfrage" className="pone-nav-cta">Angebot einholen</Link>
-      </div>
-
-      {/* ── Mega menu ─────────────────────────────────────────── */}
-      <div
-        id="pone-mega-dl"
-        className={`pone-mega-panel${megaOpen ? " open" : ""}`}
-        role="region"
-        aria-label="Dienstleistungen Menü"
-        onMouseEnter={() => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); }}
-        onMouseLeave={scheduleMegaClose}
+      <header 
+        className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 transform-gpu ${
+          scrolled || mobileOpen
+            ? "py-3 px-4 lg:px-10"
+            : "py-6 px-4 lg:px-10"
+        }`}
       >
-        <div className="pone-mega-inner">
-
-          {/* Left */}
-          <div className="pone-mega-left">
-            <span className="pone-mega-eyebrow">Dienstleistungen</span>
-            <div className="pone-mega-section-hl">
-              <div className="pone-mega-hl-text">Was wir für Sie tun.</div>
+        {/* DESKTOP NAVBAR */}
+        <nav
+          className={`hidden xl:flex container mx-auto max-w-[1300px] items-center justify-between transition-all duration-500 transform-gpu border ${
+            scrolled
+              ? "bg-[#0A0A0A]/80 backdrop-blur-[8px] border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+              : "bg-transparent border-transparent"
+          } rounded-[24px] px-6 py-3`}
+        >
+          <Link href="/" className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-[0.98]">
+            <div className="flex items-center gap-2">
+              <span className="pone-logo-pauli">PAULI</span>
+              <span className="pone-logo-block">
+                <span className="pone-logo-one">ONE</span>
+              </span>
             </div>
-            <ul className="pone-mega-list">
-              {services.map(s => (
-                <li key={s.num}>
-                  <Link href={s.href} className="pone-mega-link">
-                    <span className="pone-ml-num">{s.num}</span>
-                    <span className="pone-ml-body">
-                      <span className="pone-ml-title">{s.title}</span>
-                      <span className="pone-ml-sub">{s.sub}</span>
-                    </span>
-                    <span className="pone-ml-arr">
-                      <svg width="18" height="10" viewBox="0 0 18 10" fill="none">
-                        <path d="M1 5H17M12 1L17 5L12 9" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" />
-                      </svg>
-                    </span>
+          </Link>
+
+          {/* Desktop Nav Items */}
+          <div className="flex items-center ml-8">
+            <ul className="flex items-center gap-0.5">
+              {menus.map((menu) => (
+                <li
+                  key={menu.label}
+                  className="relative flex items-center"
+                  onMouseEnter={() => handleMouseEnter(menu.label)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <Link
+                    href={menu.href}
+                    className={`flex items-center px-4 py-2 rounded-lg text-[14px] font-medium transition-all duration-200 ${
+                      activeMenu === menu.label
+                        ? "text-white bg-white/[0.06]"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {menu.label}
+                    {menu.items && <DropdownArrow isOpen={activeMenu === menu.label} />}
                   </Link>
+
+                  {/* Mega Menu Dropdown */}
+                  <AnimatePresence>
+                    {menu.items && activeMenu === menu.label && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                        transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+                        className="absolute top-full left-1/2 -translate-x-1/2 pt-4 flex flex-col items-center pointer-events-auto"
+                      >
+                        {/* Dropdown Card */}
+                        <div className="w-[620px] flex rounded-[24px] overflow-hidden bg-[#0D0D0D]/90 backdrop-blur-3xl border border-white/[0.1] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                          {/* Links Side */}
+                          <div className="flex-1 p-5 grid grid-cols-1 gap-0.5">
+                            {menu.items.map((item, idx) => (
+                              <Link
+                                key={idx}
+                                href={item.href}
+                                className="group p-3 rounded-xl transition-all duration-200 hover:bg-white/[0.04]"
+                              >
+                                <div className="text-[14.5px] font-semibold text-white group-hover:translate-x-0.5 transition-transform duration-200">
+                                  {item.title}
+                                </div>
+                                {item.description && (
+                                  <div className="text-[12.5px] text-gray-400 mt-0.5 leading-relaxed">
+                                    {item.description}
+                                  </div>
+                                )}
+                              </Link>
+                            ))}
+                          </div>
+
+                          {/* Featured Side */}
+                          {menu.featured && (
+                            <div className="w-[240px] p-6 bg-white/[0.02] border-l border-white/[0.05] flex flex-col justify-between">
+                              <div>
+                                <span className="text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase">
+                                  {menu.featured.label}
+                                </span>
+                                <h4 className="text-[15px] font-bold text-white mt-2 leading-tight">
+                                  {menu.featured.title}
+                                </h4>
+                              </div>
+                              <Link
+                                href={menu.featured.ctaHref}
+                                className="group inline-flex items-center gap-2 text-[13px] font-bold text-white mt-4"
+                              >
+                                {menu.featured.cta}
+                                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Right */}
-          <div className="pone-mega-right">
+          <div className="flex items-center gap-8 ml-auto">
+            <Link
+              href="/anfrage"
+              className="text-[14px] font-bold px-6 py-2.5 rounded-full bg-white text-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-black/5"
+            >
+              Angebot einholen
+            </Link>
+          </div>
+        </nav>
 
-            {/* Featured Projects ticker */}
-            <div className="pone-mega-projects">
-              <div className="pone-mega-eyebrow pone-mega-eyebrow--right">Featured Projects</div>
-              <div className="pone-mega-section-hl">
-                <div className="pone-mega-hl-text pone-mega-hl-text--sm">Arbeit, die überzeugt.</div>
+        {/* MOBILE NAVBAR (Joy_ Style – Pill morphs to expanded panel) */}
+        <motion.nav
+          initial={false}
+          animate={{
+            backgroundColor: (scrolled || mobileOpen)
+              ? "rgba(10,10,10,0.95)"
+              : "transparent",
+            borderColor: (scrolled || mobileOpen)
+              ? "rgba(255,255,255,0.08)"
+              : "transparent",
+            borderRadius: mobileOpen ? "32px" : "100px",
+            boxShadow: (scrolled || mobileOpen)
+              ? "0 12px 40px rgba(0,0,0,0.4)"
+              : "0 0 0 rgba(0,0,0,0)",
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 28,
+            mass: 0.9,
+          }}
+          className={`xl:hidden flex flex-col mx-auto w-full max-w-full overflow-hidden border ${
+            (scrolled || mobileOpen) ? "backdrop-blur-[12px]" : ""
+          }`}
+        >
+          {/* Top Bar (Always Visible) */}
+          <div className="flex items-center justify-between px-4 py-3 relative z-10 w-full">
+            <Link href="/" className="flex items-center gap-3 pl-2 transition-transform hover:scale-[1.02] active:scale-[0.98]" onClick={() => setMobileOpen(false)}>
+              <div className="flex items-center gap-2">
+                <span className="pone-logo-pauli">PAULI</span>
+                <span className="pone-logo-block">
+                  <span className="pone-logo-one">ONE</span>
+                </span>
               </div>
-              <div
-                className="pone-mega-ticker-wrap"
-                onMouseEnter={() => { pauseRef.current = true; }}
-                onMouseLeave={() => { pauseRef.current = false; }}
+            </Link>
+
+            <div className="flex items-center gap-2">
+              {/* CTA pill – fades out in place when menu opens, no layout shift */}
+              <motion.button
+                animate={{
+                  opacity: mobileOpen ? 0 : 1,
+                  scale: mobileOpen ? 0.8 : 1,
+                  width: mobileOpen ? 0 : "auto",
+                  marginRight: mobileOpen ? 0 : undefined,
+                  filter: mobileOpen ? "blur(4px)" : "blur(0px)",
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="text-[13px] font-medium px-4 py-[8px] rounded-[24px] bg-white text-black border-none whitespace-nowrap overflow-hidden"
+                style={{ pointerEvents: mobileOpen ? "none" : "auto" }}
+                tabIndex={mobileOpen ? -1 : 0}
               >
-                <div className="pone-mega-ticker" ref={tickerRef}>
-                  {tickerItems.map((p, i) => (
-                    <Link key={i} href="/referenzen" className="pone-ticker-item">
-                      <span className="pone-ticker-num">
-                        {String((i % tickerProjects.length) + 1).padStart(2, "0")}
-                      </span>
-                      <span className="pone-ticker-info">
-                        <span className="pone-ticker-name">{p.name}</span>
-                        <span className="pone-ticker-cat">{p.cat}</span>
-                      </span>
-                      <span className="pone-ticker-arr">→</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
+                <Link href="/anfrage">Angebot einholen</Link>
+              </motion.button>
+
+              {/* Hamburger / Close – white circle button like Joy_ */}
+              <motion.button
+                onClick={() => setMobileOpen((v) => !v)}
+                className="relative flex items-center justify-center w-[40px] h-[40px] rounded-[20px] bg-white/10 text-white shadow-sm flex-shrink-0"
+                aria-label={mobileOpen ? "Menü schließen" : "Menü öffnen"}
+                whileTap={{ scale: 0.9 }}
+              >
+                <motion.div
+                  animate={{ rotate: mobileOpen ? 180 : 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <AnimatePresence mode="wait" initial={false}>
+                    {mobileOpen ? (
+                      <motion.div
+                        key="close"
+                        initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <X size={20} strokeWidth={2} />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="menu"
+                        initial={{ opacity: 0, scale: 0.5, rotate: 90 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <MenuIcon size={20} strokeWidth={2} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              </motion.button>
             </div>
+          </div>
 
-            <div className="pone-mega-divider" />
-
-            {/* Testimonials */}
-            <div className="pone-mega-testi">
-              <div className="pone-mega-eyebrow pone-mega-eyebrow--right">Kundenstimmen</div>
-              <div className="pone-mega-section-hl">
-                <div className="pone-mega-hl-text pone-mega-hl-text--sm">Was Kunden über uns sagen.</div>
-              </div>
-              <div className="pone-testi-quote-icon">
-                <svg width="16" height="12" viewBox="0 0 18 14" fill="none">
-                  <path d="M0 14V8.4C0 5.6 1.8 3.2 5.4 1.2L6.6 2.8C4.6 3.8 3.4 5 3 6.4h3V14H0zm9 0V8.4C9 5.6 10.8 3.2 14.4 1.2L15.6 2.8C13.6 3.8 12.4 5 12 6.4h3V14H9z" fill="#1757c2" opacity="0.5" />
-                </svg>
-              </div>
-              <div className="pone-testi-slides">
-                {testimonials.map((t, i) => (
-                  <div key={i} className={`pone-testi-slide${testiIdx === i ? " active" : ""}`}>
-                    <p className="pone-testi-text">{t.text}</p>
-                    <div className="pone-testi-author">
-                      <span className="pone-testi-dot" />
-                      <span className="pone-testi-name">{t.name}</span>
-                      <span className="pone-testi-sep">·</span>
-                      <span className="pone-testi-company">{t.company}</span>
-                      <span className="pone-testi-stars">★★★★★</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="pone-testi-dots">
-                {testimonials.map((_, i) => (
-                  <span
-                    key={i}
-                    className={`pone-testi-pip${testiIdx === i ? " active" : ""}`}
-                    onClick={() => setTestiIdx(i)}
+          {/* Expanded Menu Content */}
+          <AnimatePresence>
+            {mobileOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{
+                  height: { type: "spring", stiffness: 260, damping: 28, mass: 0.9 },
+                  opacity: { duration: 0.25 },
+                }}
+                className="overflow-hidden w-full"
+              >
+                <div className="flex flex-col px-6 pb-8 pt-2 w-full overflow-y-auto max-h-[calc(100dvh-72px)]">
+                  {/* Divider line */}
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.1, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                    className="h-px bg-white/[0.08] w-full origin-left mb-6"
                   />
-                ))}
-              </div>
-            </div>
 
-            {/* Mega CTA */}
-            <div className="pone-mega-bottom">
-              <Link href="/anfrage" className="pone-mega-cta-link">
-                <span className="pone-mega-cta-inner">
-                  <span className="pone-mega-cta-label">Angebot einholen</span>
-                  <svg width="20" height="10" viewBox="0 0 20 10" fill="none">
-                    <path d="M1 5H19M14 1L19 5L14 9" stroke="currentColor" strokeWidth="0.85" strokeLinecap="round" />
-                  </svg>
-                </span>
-                <span className="pone-mega-cta-line" />
-              </Link>
-              <span className="pone-mega-cta-note">Antwort innerhalb von 24 Stunden</span>
-            </div>
-          </div>
-        </div>
-      </div>
+                  {/* Main navigation links */}
+                  <div className="flex flex-col gap-1 w-full">
+                    {menus.map((menu, index) => (
+                      <motion.div
+                        key={menu.label}
+                        initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+                        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                        transition={{
+                          delay: 0.08 + index * 0.06,
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 25,
+                        }}
+                        className="w-full"
+                      >
+                        {menu.items ? (
+                          <>
+                            <button
+                              onClick={() => toggleMobileExpanded(menu.label)}
+                              className="w-full flex items-center justify-between py-4 text-left group"
+                            >
+                              <span className="text-[28px] font-semibold text-white leading-tight tracking-[-0.02em]">
+                                {menu.label}
+                              </span>
+                              <motion.div
+                                animate={{ rotate: mobileExpanded === menu.label ? 45 : 0 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                className="w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center flex-shrink-0"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-white">
+                                  <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                </svg>
+                              </motion.div>
+                            </button>
+                            <AnimatePresence>
+                              {mobileExpanded === menu.label && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{
+                                    height: { type: "spring", stiffness: 300, damping: 28 },
+                                    opacity: { duration: 0.2 },
+                                  }}
+                                  className="overflow-hidden w-full"
+                                >
+                                  <div className="flex flex-col gap-3 pb-4 pl-1">
+                                    {menu.items.map((item, idx) => (
+                                      <motion.div
+                                        key={idx}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.04, duration: 0.25 }}
+                                      >
+                                        <Link
+                                          href={item.href}
+                                          onClick={() => setMobileOpen(false)}
+                                          className="block py-1.5 text-[16px] font-medium text-gray-400 hover:text-white transition-colors"
+                                        >
+                                          {item.title}
+                                        </Link>
+                                      </motion.div>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </>
+                        ) : (
+                          <Link
+                            href={menu.href}
+                            onClick={() => setMobileOpen(false)}
+                            className="block py-4 text-[28px] font-semibold text-white leading-tight tracking-[-0.02em] hover:opacity-60 transition-opacity"
+                          >
+                            {menu.label}
+                          </Link>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
 
-      {/* ── Mobile overlay ────────────────────────────────────── */}
-      <div
-        className={`pone-mob-overlay${mobOpen ? " open" : ""}`}
-        aria-hidden={!mobOpen}
-      >
-        <div className="pone-mob-spacer" />
-        <div className="pone-mob-body">
-          <ul className="pone-mob-list">
-            <li className="pone-mob-item">
-              <Link href="https://www.pauli-one.de" className="pone-mob-row" onClick={() => setMobOpen(false)}>
-                <span className="pone-mob-row-title">Startseite</span>
-                <span className="pone-mob-row-icon"><ArrowIcon /></span>
-              </Link>
-            </li>
-            <li className="pone-mob-item">
-              <Link href="/ueber-mich" className="pone-mob-row" onClick={() => setMobOpen(false)}>
-                <span className="pone-mob-row-title">Über mich</span>
-                <span className="pone-mob-row-icon"><ArrowIcon /></span>
-              </Link>
-            </li>
-            <li className="pone-mob-item">
-              <Link href="/referenzen" className="pone-mob-row" onClick={() => setMobOpen(false)}>
-                <span className="pone-mob-row-title">Projekte</span>
-                <span className="pone-mob-row-icon"><ArrowIcon /></span>
-              </Link>
-            </li>
-            <li className="pone-mob-item">
-              <button
-                className="pone-mob-row"
-                onClick={() => setMobSubOpen(v => !v)}
-              >
-                <span className="pone-mob-row-title">Dienstleistungen</span>
-                <span className={`pone-mob-row-icon${mobSubOpen ? " rotated" : ""}`}>
-                  <ArrowIcon />
-                </span>
-              </button>
-              <div className={`pone-mob-sub${mobSubOpen ? " open" : ""}`}>
-                <Link href="/webauftritt" className="pone-mob-sub-item" onClick={() => setMobOpen(false)}>
-                  <span className="pone-mob-sub-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="1"/><path d="M8 21h8M12 17v4"/><path d="M7 8h2M7 11h2"/></svg>
-                  </span>
-                  <span>
-                    <span className="pone-mob-sub-title">Webauftritt</span>
-                    <span className="pone-mob-sub-desc">Website, Onlineshop oder Re-design</span>
-                  </span>
-                </Link>
-                <Link href="/marketing-und-strategie" className="pone-mob-sub-item" onClick={() => setMobOpen(false)}>
-                  <span className="pone-mob-sub-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
-                  </span>
-                  <span>
-                    <span className="pone-mob-sub-title">Marketing &amp; Strategie</span>
-                    <span className="pone-mob-sub-desc">Advertising, Social Media Marketing</span>
-                  </span>
-                </Link>
-                <Link href="/design-und-markenauftritt" className="pone-mob-sub-item" onClick={() => setMobOpen(false)}>
-                  <span className="pone-mob-sub-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                  </span>
-                  <span>
-                    <span className="pone-mob-sub-title">Design &amp; Markenauftritt</span>
-                    <span className="pone-mob-sub-desc">Logo, Werbemittel, Corporate Design</span>
-                  </span>
-                </Link>
-                <Link href="/abomodell" className="pone-mob-sub-item" onClick={() => setMobOpen(false)}>
-                  <span className="pone-mob-sub-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
-                  </span>
-                  <span>
-                    <span className="pone-mob-sub-title">Abomodell</span>
-                    <span className="pone-mob-sub-desc">All-In-One Projekte im Abomodell</span>
-                  </span>
-                </Link>
-                <Link href="/service" className="pone-mob-sub-item" onClick={() => setMobOpen(false)}>
-                  <span className="pone-mob-sub-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>
-                  </span>
-                  <span>
-                    <span className="pone-mob-sub-title">Website-Service</span>
-                    <span className="pone-mob-sub-desc">Instandhaltung Ihrer Website o. Onlineshop</span>
-                  </span>
-                </Link>
-              </div>
-            </li>
-            <li className="pone-mob-item">
-              <Link href="/kontakt" className="pone-mob-row" onClick={() => setMobOpen(false)}>
-                <span className="pone-mob-row-title">Kontakt</span>
-                <span className="pone-mob-row-icon"><ArrowIcon /></span>
-              </Link>
-            </li>
-          </ul>
-        </div>
+                  {/* Bottom section – CTAs */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35, type: "spring", stiffness: 260, damping: 25 }}
+                    className="mt-8 flex flex-col gap-3 w-full"
+                  >
+                    <div className="flex items-center gap-3 w-full">
+                      <Link
+                        href="/anfrage"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 flex items-center justify-center py-[14px] rounded-[24px] text-[15px] font-medium bg-white text-black active:scale-[0.97] transition-all"
+                      >
+                        Angebot einholen
+                      </Link>
+                    </div>
 
-        <div className="pone-mob-footer">
-          <Link href="/anfrage" className="pone-mob-cta" onClick={() => setMobOpen(false)}>
-            Angebot einholen
-            <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
-              <path d="M1 3.5H11M7.5 1L11 3.5L7.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-            </svg>
-          </Link>
-          <div className="pone-mob-contacts">
-            <div className="pone-mob-contact-row">
-              <svg className="pone-mob-contact-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .99h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-              </svg>
-              <a href="tel:+4915563127126" className="pone-mob-contact-val">+49 15563 127126</a>
-            </div>
-            <div className="pone-mob-contact-row">
-              <svg className="pone-mob-contact-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-              <a href="mailto:philipp@pauli-one.de" className="pone-mob-contact-val">philipp@pauli-one.de</a>
-            </div>
-          </div>
-        </div>
-      </div>
+                    {/* Contacts Row */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.45, duration: 0.3 }}
+                      className="flex flex-col items-center justify-center gap-3 pt-6 text-sm text-gray-500"
+                    >
+                      <a href="mailto:philipp@pauli-one.de" className="hover:text-white transition-colors">philipp@pauli-one.de</a>
+                      <a href="tel:+4915563127126" className="hover:text-white transition-colors">+49 15563 127126</a>
+                    </motion.div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.nav>
+      </header>
+
+      {/* Dimmed Overlay Background for Mobile */}
+      <AnimatePresence>
+         {mobileOpen && (
+            <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               transition={{ duration: 0.3 }}
+               className="fixed inset-0 bg-black/60 z-[50] xl:hidden"
+               onClick={() => setMobileOpen(false)}
+            />
+         )}
+      </AnimatePresence>
     </>
-  );
-}
-
-/* ── Shared icon ─────────────────────────────────────────────── */
-function ArrowIcon() {
-  return (
-    <svg width="14" height="9" viewBox="0 0 14 9" fill="none">
-      <path d="M1 4.5H13M9 1L13 4.5L9 8" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
-    </svg>
   );
 }
