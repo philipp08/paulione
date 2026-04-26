@@ -116,7 +116,7 @@ export function Header() {
             <img
               src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
               alt="PauliONE"
-              className="h-6 w-auto object-contain invert brightness-0"
+              className="h-6 w-auto object-contain invert"
             />
           </Link>
 
@@ -244,7 +244,7 @@ export function Header() {
               <img
                 src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
                 alt="PauliONE"
-                className="h-5 w-auto object-contain invert brightness-0"
+                className="h-5 w-auto object-contain invert"
               />
             </Link>
 
