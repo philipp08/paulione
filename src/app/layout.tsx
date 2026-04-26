@@ -1,33 +1,45 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins, Tenor_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import "./content-block.css";
+import "./footer.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const tenorSans = Tenor_Sans({
+  variable: "--font-tenor",
   subsets: ["latin"],
+  weight: ["400"],
+});
+
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["italic"],
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "PauliONE | Webdesign & Marketing",
+  description:
+    "PauliONE – Wir erstellen Designs und Websites, die nicht nur gut aussehen, sondern auch funktionieren.",
+  keywords: ["Webdesign", "Marketing", "Webauftritt", "Logo", "Branding", "PauliONE"],
+  robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="de"
+      className={`${poppins.variable} ${tenorSans.variable} ${playfairDisplay.variable}`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
