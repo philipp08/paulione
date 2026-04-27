@@ -152,7 +152,8 @@ export function Header() {
                         transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
                         className="absolute top-full left-1/2 -translate-x-1/2 pt-4 flex flex-col items-center pointer-events-auto"
                       >
-                        {/* Dropdown Card                         <div className="w-[720px] flex rounded-[24px] overflow-hidden bg-[#0D0D0D]/95 backdrop-blur-3xl border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+                        {/* Dropdown Card */}
+                        <div className="w-[720px] flex rounded-[24px] overflow-hidden bg-[#0D0D0D]/95 backdrop-blur-3xl border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
                           {/* Links Side */}
                           <div className="flex-[1.2] p-6 grid grid-cols-2 gap-x-4 gap-y-1">
                             {menu.items.map((item, idx) => (

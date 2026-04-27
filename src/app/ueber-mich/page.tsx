@@ -2,8 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import Header from "@/components/landing/Header";
-import Footer from "@/components/landing/Footer";
+import { Header } from "@/components/landing/Header";
+import { Footer } from "@/components/landing/Footer";
 import "./ueber-mich.css";
 
 export default function UeberMich() {
