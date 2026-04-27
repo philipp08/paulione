@@ -4,70 +4,7 @@
    Tagline: Beyond Ordinary
    ============================================================ */
 
-/* -------- Fonts -------- */
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-Light.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-Italic.ttf") format("truetype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-ExtraBold.ttf") format("truetype");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Poppins";
-  src: url("/fonts/Poppins-Black.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Playfair Display";
-  src: url("/fonts/PlayfairDisplay-Italic.ttf") format("truetype-variations");
-  font-weight: 300 900;
-  font-style: italic;
-  font-display: swap;
-}
+/* Fonts loaded via next/font/google in layout.tsx */
 
 /* ============================================================
    TOKENS
@@ -122,8 +59,8 @@
   --accent: var(--brand-blue);
 
   /* -------- Typefaces -------- */
-  --font-sans: "Poppins", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-serif-italic: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-poppins), "Poppins", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-serif-italic: var(--font-playfair), "Playfair Display", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   /* -------- Type scale (desktop) -------- */

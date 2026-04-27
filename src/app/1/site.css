@@ -797,25 +797,6 @@ html, :root {
 /* Light hero: keep light bg + dark text */
 .p1-hero:not(.p1-hero--dark) { background: var(--bg-light) !important; color: var(--ink-1) !important; }
 .p1-hero:not(.p1-hero--dark) .p1-hero__title { color: var(--ink-1); }
-/* Scoped container to override global layout */
-.p1v-container {
-  background: #f5f6fa !important;
-  color: #0a0f1e !important;
-  font-family: var(--font-sans) !important;
-  min-height: 100vh;
-  position: relative;
-  z-index: 1;
-}
-
-.p1v-container main {
-  background: transparent !important;
-}
-
-/* Ensure no descender clipping */
-.p1-words .word {
-  overflow: visible !important;
-  padding-bottom: 0.1em;
-}
 
 /* Animated gradient on Playfair accent — stronger selector to beat later rules */
 .p1-accent,
