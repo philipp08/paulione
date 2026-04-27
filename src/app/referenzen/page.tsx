@@ -16,30 +16,39 @@ export default function Referenzen() {
       try {
         // --- Hero Logic ---
         const heroInit = () => {
-          var p1rhRoot = document.getElementById('p1-ref-hero');
-          var p1rhGlow = document.getElementById('p1rh-glow');
+          const p1rhRoot = document.getElementById('p1-ref-hero');
+          const p1rhGlow = document.getElementById('p1rh-glow');
           if (!p1rhRoot || !p1rhGlow) return;
 
-          setTimeout(function () { p1rhRoot.classList.add('p1rh-animate'); }, 100);
+          setTimeout(() => { 
+            if (p1rhRoot) p1rhRoot.classList.add('p1rh-animate'); 
+          }, 100);
 
-          var p1rhHovering = false;
+          let p1rhHovering = false;
 
           if (window.matchMedia('(pointer: fine)').matches) {
-            p1rhRoot.addEventListener('mousemove', function (e) {
-              if (!p1rhHovering) { p1rhGlow.style.opacity = '1'; p1rhHovering = true; }
-              requestAnimationFrame(function () {
-                p1rhGlow.style.left = e.clientX + 'px';
-                p1rhGlow.style.top  = e.clientY + 'px';
+            p1rhRoot.addEventListener('mousemove', (e) => {
+              if (!p1rhHovering) { 
+                if (p1rhGlow) p1rhGlow.style.opacity = '1'; 
+                p1rhHovering = true; 
+              }
+              requestAnimationFrame(() => {
+                if (p1rhGlow) {
+                  p1rhGlow.style.left = e.clientX + 'px';
+                  p1rhGlow.style.top  = e.clientY + 'px';
+                }
               });
             });
-            p1rhRoot.addEventListener('mouseleave', function () {
-              p1rhGlow.style.opacity = '0';
+            p1rhRoot.addEventListener('mouseleave', () => {
+              if (p1rhGlow) p1rhGlow.style.opacity = '0';
               p1rhHovering = false;
             });
           } else {
-            p1rhGlow.style.left = '50%';
-            p1rhGlow.style.top  = '50%';
-            p1rhGlow.style.opacity = '0.4';
+            if (p1rhGlow) {
+              p1rhGlow.style.left = '50%';
+              p1rhGlow.style.top  = '50%';
+              p1rhGlow.style.opacity = '0.4';
+            }
           }
         };
 
@@ -50,10 +59,10 @@ export default function Referenzen() {
             const title = document.getElementById('pw-title');
             if (!title) return;
 
-            const newNodes = [];
+            const newNodes: Node[] = [];
             title.childNodes.forEach(node => {
               if (node.nodeType === Node.TEXT_NODE) {
-                const words = node.textContent.split(/(\s+)/);
+                const words = (node.textContent || "").split(/(\s+)/);
                 words.forEach(part => {
                   if (/\S/.test(part)) {
                     const wrap = document.createElement('span');
@@ -91,7 +100,7 @@ export default function Referenzen() {
           const io = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
               if (!entry.isIntersecting) return;
-              const el = entry.target;
+              const el = entry.target as HTMLElement;
               io.unobserve(el);
 
               if (el.id === 'pw-label') el.classList.add('pw-triggered');
@@ -113,7 +122,7 @@ export default function Referenzen() {
           document.querySelectorAll('.pw-stat').forEach(s => io.observe(s));
 
           /* --- 3. ANIMATION FUNCTIONS --- */
-          function animateTitle(el) {
+          function animateTitle(el: HTMLElement) {
             const words = el.querySelectorAll('.pw-word');
             words.forEach((w, i) => {
               setTimeout(() => {
@@ -125,31 +134,31 @@ export default function Referenzen() {
             });
           }
 
-          function animateFilters(el) {
+          function animateFilters(el: HTMLElement) {
             el.querySelectorAll('.pw-filter-btn').forEach((btn, i) => {
               setTimeout(() => btn.classList.add('pw-triggered'), i * 70);
             });
           }
 
-          function animateCard(el) {
-            const delay = parseFloat(el.dataset.cardDelay || 0);
+          function animateCard(el: HTMLElement) {
+            const delay = parseFloat(el.dataset.cardDelay || "0");
             setTimeout(() => el.classList.add('pw-triggered'), delay);
           }
 
-          function animateStat(el) {
+          function animateStat(el: HTMLElement) {
             el.classList.add('pw-triggered');
             const numEl = el.querySelector('.pw-stat__number');
-            const target = parseInt(el.dataset.target, 10);
+            const target = parseInt(el.dataset.target || "0", 10);
             const suffix = el.dataset.suffix || '';
             if (!numEl || isNaN(target)) return;
 
-            let start = null;
+            let start: number | null = null;
             const duration = 1400;
-            function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-            function step(ts) {
+            function easeOut(t: number) { return 1 - Math.pow(1 - t, 3); }
+            function step(ts: number) {
               if (!start) start = ts;
               const progress = Math.min((ts - start) / duration, 1);
-              numEl.textContent = Math.round(easeOut(progress) * target) + suffix;
+              if (numEl) numEl.textContent = Math.round(easeOut(progress) * target) + suffix;
               if (progress < 1) requestAnimationFrame(step);
             }
             requestAnimationFrame(step);
@@ -157,11 +166,12 @@ export default function Referenzen() {
 
           /* --- 4. STAGGER CARD DELAYS --- */
           document.querySelectorAll('#pw-grid .pw-card').forEach((card, i) => {
-            card.dataset.cardDelay = i * 100;
+            (card as HTMLElement).dataset.cardDelay = (i * 100).toString();
           });
 
           /* --- 5. 3D TILT ON CARDS --- */
-          document.querySelectorAll('.pw-card').forEach(card => {
+          document.querySelectorAll('.pw-card').forEach(c => {
+            const card = c as HTMLElement;
             card.addEventListener('mousemove', e => {
               const rect = card.getBoundingClientRect();
               const x = (e.clientX - rect.left) / rect.width  - 0.5;
@@ -172,7 +182,7 @@ export default function Referenzen() {
               card.style.transition = 'box-shadow 0.4s ease, border-color 0.3s ease';
               card.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.015)`;
 
-              const shine = card.querySelector('.pw-card__shine');
+              const shine = card.querySelector('.pw-card__shine') as HTMLElement;
               if (shine) {
                 shine.style.background = `radial-gradient(circle at ${(x+0.5)*100}% ${(y+0.5)*100}%, rgba(255,255,255,0.05) 0%, transparent 60%)`;
               }
@@ -185,12 +195,14 @@ export default function Referenzen() {
           });
 
           /* --- 6. FILTER LOGIC --- */
-          document.querySelectorAll('.pw-filter-btn').forEach(btn => {
+          document.querySelectorAll('.pw-filter-btn').forEach(b => {
+            const btn = b as HTMLElement;
             btn.addEventListener('click', () => {
               document.querySelectorAll('.pw-filter-btn').forEach(b => b.classList.remove('active'));
               btn.classList.add('active');
               const filter = btn.dataset.filter;
-              document.querySelectorAll('#pw-grid .pw-card').forEach(card => {
+              document.querySelectorAll('#pw-grid .pw-card').forEach(c => {
+                const card = c as HTMLElement;
                 card.classList.toggle('pw-hidden', filter !== 'all' && card.dataset.category !== filter);
               });
             });
