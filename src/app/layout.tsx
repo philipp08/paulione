@@ -31,6 +31,8 @@ export const metadata: Metadata = {
   robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
 };
 
+import { CookieBanner } from "@/components/shared/CookieBanner";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -39,7 +41,10 @@ export default function RootLayout({
       lang="de"
       className={`${poppins.variable} ${tenorSans.variable} ${playfairDisplay.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }
