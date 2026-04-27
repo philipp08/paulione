@@ -4,7 +4,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import Header from '@/components/landing/Header';
+import { Header } from '@/components/landing/Header';
 import './site.css';
 
 // --- From helpers.jsx ---
