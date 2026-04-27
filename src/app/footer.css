@@ -9,10 +9,11 @@
   width: 100%;
   position: relative;
   overflow: hidden;
-  background: transparent;
+  background: #080808;
   color: #fff;
   font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
+  border-top: 1px solid rgba(255, 255, 255, .05);
 }
 
 .ft::before {
@@ -45,6 +46,9 @@
 
 .ft-inner {
   width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 var(--pone-px, 24px);
   position: relative;
   z-index: 1;
 }
@@ -439,13 +443,15 @@
   }
   .ft-brand {
     grid-column: auto;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
   }
   .ft-brand__tagline {
     max-width: 260px;
+    margin-left: 0;
+    margin-right: 0;
   }
   .ft-socials {
-    justify-content: center;
+    justify-content: flex-start;
   }
 }
