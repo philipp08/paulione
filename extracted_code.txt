@@ -1,0 +1,997 @@
+<!-- ========================================================
+     PauliONE – Referenzen Block
+     Transparenter Hintergrund | Dark Mode optimiert
+     ======================================================== -->
+
+
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&display=swap"
+    rel="stylesheet">
+
+
+    /* ── Reset & Base ── */
+    .pw-refs *,
+    .pw-refs *::before,
+    .pw-refs *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pw-refs {
+        background: transparent;
+        color: #fff;
+        font-family: 'Poppins', sans-serif;
+        padding: 100px 0 120px;
+        overflow: hidden;
+    }
+
+    .pw-container {
+        width: min(1240px, 92%);
+        margin: 0 auto;
+    }
+
+    /* ─────────────────────────────────────────
+     LABEL – line grows in from left+right
+  ───────────────────────────────────────── */
+    .pw-section-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.45);
+        margin-bottom: 20px;
+        text-align: center;
+        opacity: 0;
+    }
+
+    .pw-section-label::before,
+    .pw-section-label::after {
+        content: '';
+        display: block;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.3);
+        width: 0;
+        transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .pw-section-label.pw-triggered {
+        opacity: 1;
+        transition: opacity 0.01s;
+    }
+
+    .pw-section-label.pw-triggered::before,
+    .pw-section-label.pw-triggered::after {
+        width: 28px;
+    }
+
+    /* ─────────────────────────────────────────
+     HEADLINE – word-by-word clip reveal
+  ───────────────────────────────────────── */
+    .pw-section-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.6rem);
+        font-weight: 700;
+        line-height: 1.18;
+        margin-bottom: 14px;
+        text-align: center;
+    }
+
+    /* each word wrapped in a clip container */
+    .pw-word-wrap {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: bottom;
+        padding-bottom: 0.05em;
+        /* prevent descender clip */
+    }
+
+    .pw-word {
+        display: inline-block;
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+    }
+
+    .pw-word.pw-word--visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* "für sich" italic gradient + shimmer */
+    .pw-section-title em {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-weight: 400;
+        background: linear-gradient(90deg, #004aad 0%, #1a6fdc 45%, #3a8fff 70%, #004aad 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    @keyframes pw-shimmer {
+        0% {
+            background-position: 0% center;
+        }
+
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    .pw-shimmer-active em {
+        animation: pw-shimmer 3s linear infinite;
+    }
+
+    /* ─────────────────────────────────────────
+     SUBTITLE – char by char blur in
+  ───────────────────────────────────────── */
+    .pw-section-subtitle {
+        font-size: clamp(0.9rem, 2vw, 1.05rem);
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 300;
+        max-width: 560px;
+        line-height: 1.7;
+        margin: 28px auto 60px auto;
+        text-align: center;
+        opacity: 0;
+        filter: blur(8px);
+        transform: translateY(10px);
+        transition: opacity 0.8s ease, filter 0.8s ease, transform 0.8s ease;
+    }
+
+    .pw-section-subtitle.pw-triggered {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+    }
+
+    /* ─────────────────────────────────────────
+     FILTER TABS – staggered pop-in
+  ───────────────────────────────────────── */
+    .pw-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 48px;
+        justify-content: flex-start;
+    }
+
+    .pw-filter-btn {
+        padding: 8px 20px;
+        border-radius: 100px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: transparent;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 0.03em;
+        opacity: 0;
+        transform: scale(0.85) translateY(8px);
+    }
+
+    .pw-filter-btn.pw-triggered {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+            background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .pw-filter-btn:hover {
+        border-color: rgba(255, 255, 255, 0.35);
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .pw-filter-btn.active {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+        font-weight: 600;
+    }
+
+    /* ─────────────────────────────────────────
+     CARDS – 3D tilt + staggered slide-in
+  ───────────────────────────────────────── */
+    .pw-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+        perspective: 1200px;
+    }
+
+    .pw-card {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        cursor: pointer;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        /* entrance state */
+        opacity: 0;
+        transform: translateY(60px) rotateX(8deg) scale(0.97);
+        transform-origin: center bottom;
+        transition:
+            opacity 0.7s ease,
+            transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+            border-color 0.3s ease,
+            box-shadow 0.4s ease;
+        will-change: transform, opacity;
+    }
+
+    .pw-card.pw-triggered {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg) scale(1);
+    }
+
+    /* hover lift — JS 3D tilt overrides rotateX/Y */
+    .pw-card:hover {
+        border-color: rgba(255, 255, 255, 0.22);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    }
+
+    /* Website / Onlineshop / Marketing – große Karten */
+    .pw-card--large,
+    .pw-card--medium {
+        grid-column: span 6;
+    }
+
+    /* Werbemittel – kleinere Karten */
+    .pw-card--small {
+        grid-column: span 4;
+    }
+
+    @media (max-width: 900px) {
+
+        .pw-card--large,
+        .pw-card--medium {
+            grid-column: span 12;
+        }
+
+        .pw-card--small {
+            grid-column: span 6;
+        }
+    }
+
+    @media (max-width: 560px) {
+        .pw-card--small {
+            grid-column: span 12;
+        }
+    }
+
+    .pw-card__img-wrap {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .pw-card--large .pw-card__img-wrap,
+    .pw-card--medium .pw-card__img-wrap {
+        height: 340px;
+    }
+
+    .pw-card--small .pw-card__img-wrap {
+        height: 240px;
+    }
+
+    @media (max-width: 900px) {
+
+        .pw-card--large .pw-card__img-wrap,
+        .pw-card--medium .pw-card__img-wrap {
+            height: 260px;
+        }
+
+        .pw-card--small .pw-card__img-wrap {
+            height: 200px;
+        }
+    }
+
+    @media (max-width: 560px) {
+
+        .pw-card--large .pw-card__img-wrap,
+        .pw-card--medium .pw-card__img-wrap,
+        .pw-card--small .pw-card__img-wrap {
+            height: 200px;
+        }
+    }
+
+    .pw-card__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .pw-card:hover .pw-card__img {
+        transform: scale(1.07);
+    }
+
+    /* Shine overlay for 3D tilt */
+    .pw-card__shine {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        border-radius: 16px;
+        mix-blend-mode: screen;
+    }
+
+    .pw-card:hover .pw-card__shine {
+        opacity: 1;
+    }
+
+    .pw-card__badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 100px;
+        padding: 5px 13px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .pw-card__ext {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.8) rotate(-45deg);
+        transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .pw-card:hover .pw-card__ext {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+
+    .pw-card__ext svg {
+        width: 14px;
+        height: 14px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .pw-card__body {
+        padding: 20px 22px 22px;
+    }
+
+    .pw-card__client {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.35);
+        margin-bottom: 5px;
+    }
+
+    .pw-card__title {
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.35;
+    }
+
+    /* ─────────────────────────────────────────
+     STATS – counter + slide in
+  ───────────────────────────────────────── */
+    .pw-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        margin-top: 72px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .pw-stat {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 36px 32px;
+        text-align: center;
+        transition: background 0.25s ease;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: background 0.25s ease, opacity 0.6s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .pw-stat.pw-triggered {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .pw-stat:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .pw-stat__number {
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(2.4rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .pw-stat__label {
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.4);
+        letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 600px) {
+        .pw-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .pw-stat {
+            padding: 28px 24px;
+        }
+    }
+
+    /* ─────────────────────────────────────────
+     CTA
+  ───────────────────────────────────────── */
+    .pw-cta {
+        margin-top: 60px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease 0.2s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+    }
+
+    .pw-cta.pw-triggered {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .pw-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 32px;
+        border-radius: 100px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        letter-spacing: 0.02em;
+    }
+
+    .pw-btn--primary {
+        background: #fff;
+        color: #000;
+        border: 1px solid #fff;
+    }
+
+    .pw-btn--primary:hover {
+        background: rgba(255, 255, 255, 0.88);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
+    }
+
+    .pw-btn--ghost {
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .pw-btn--ghost:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+    }
+
+
+    /* ── Placeholder Card ── */
+    .pw-placeholder {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: #080808;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pw-placeholder__blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(48px);
+        opacity: 0.45;
+    }
+
+    .pw-placeholder__blob--1 {
+        width: 260px;
+        height: 260px;
+        background: #004aad;
+        top: -60px;
+        left: -60px;
+        animation: pw-blob-drift 8s ease-in-out infinite alternate;
+    }
+
+    .pw-placeholder__blob--2 {
+        width: 200px;
+        height: 200px;
+        background: #1a3a7a;
+        bottom: -40px;
+        right: -40px;
+        animation: pw-blob-drift 11s ease-in-out infinite alternate-reverse;
+    }
+
+    .pw-placeholder__blob--3 {
+        width: 160px;
+        height: 160px;
+        background: #3a8fff;
+        top: 50%;
+        left: 55%;
+        transform: translate(-50%, -50%);
+        animation: pw-blob-drift 9s ease-in-out infinite alternate;
+        opacity: 0.2;
+    }
+
+    @keyframes pw-blob-drift {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        100% {
+            transform: translate(30px, 20px) scale(1.15);
+        }
+    }
+
+    .pw-placeholder__noise {
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+        opacity: 0.04;
+        mix-blend-mode: overlay;
+    }
+
+    .pw-placeholder__center {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pw-placeholder__center span {
+        font-family: 'Poppins', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .pw-placeholder__center svg {
+        opacity: 0.4;
+        transition: opacity 0.3s ease;
+    }
+
+    .pw-card:hover .pw-placeholder__center svg {
+        opacity: 0.7;
+    }
+
+    .pw-card:hover .pw-placeholder__blob--1 {
+        opacity: 0.6;
+    }
+
+    .pw-card:hover .pw-placeholder__blob--3 {
+        opacity: 0.35;
+    }
+
+    .pw-card.pw-hidden {
+        display: none;
+    }
+
+
+
+  REFERENZEN SECTION                                      -->
+
+
+    
+
+        
+        Unsere Arbeit
+
+        
+        
+            Projekte, die für sichsprechen.
+        
+
+        
+        
+            Ein Auszug aus unseren Referenzen – Websites, Onlineshops und Werbemittel für zufriedene Kunden.
+        
+
+        
+        
+            Alle
+            Website
+            Onlineshop
+            Werbemittel
+            Marketing
+        
+
+        
+        
+
+            <a href="https://mk-nailshop.de" target="_blank" rel="noopener" class="pw-card pw-card--large"
+                data-category="onlineshop">
+                
+                    <img src="https://onecdn.io/media/a457180b-662e-408f-8a2b-e44893cbd5b6/lg"
+               alt="MK-Nailshop" class="pw-card__img" loading="lazy">
+                
+                
+                Onlineshop
+                
+          
+        
+                
+                    Karina M.
+                    Onlineshop für einen Nagelshop — MK-Nailshop
+                
+            
+
+            <a href="https://fotografie-eschbach.de" target="_blank" rel="noopener" class="pw-card pw-card--medium"
+                data-category="website">
+                
+                    <img src="https://onecdn.io/media/53053911-902b-4f5c-8d2e-2b59b4723f04/lg"
+               alt="Fotografie Eschbach" class="pw-card__img" loading="lazy">
+                
+                
+                Website
+                
+          
+        
+                
+                    Olga E.
+                    Website für eine Fotografin — Olga Eschbach
+                
+            
+
+            
+                
+                    <img src="https://onecdn.io/media/1a0cc727-af22-4b4e-9f35-24b6267c89b8/lg"
+               alt="Aldaerry Produktetiketten" class="pw-card__img" loading="lazy">
+                
+                
+                Werbemittel
+                
+                    Aldaerry
+                    Produktetiketten-Design & -Druck
+                
+            
+
+            
+                
+                    <img src="https://onecdn.io/media/65f393b0-1f25-4530-8668-b58bef04e605/lg"
+               alt="Bäckerei Rastetten" class="pw-card__img" loading="lazy">
+                
+                
+                Werbemittel
+                
+                    Bäckerei Rastetten
+                    Gutschein-Design & -Druck
+                
+            
+
+            <a href="https://instagram.com/meyerundkersting" target="_blank" rel="noopener"
+                class="pw-card pw-card--small" data-category="marketing">
+                
+                    <img src="https://onecdn.io/media/5a3092ab-c0c1-4640-99d9-8daee4ed0fb5/lg"
+               alt="Meyer & Kersting" class="pw-card__img" loading="lazy">
+                
+                
+                Marketing
+                
+          
+        
+                
+                    Meyer & Kersting
+                    Social Media & Facebook Ads
+                
+            
+
+            <a href="https://shiglauer.ch" target="_blank" rel="noopener" class="pw-card pw-card--medium"
+                data-category="website">
+                
+                    <img src="https://onecdn.io/media/e12013e6-f059-47b7-84cb-a362c2f040f6/lg"
+               alt="ShiGlauer" class="pw-card__img" loading="lazy">
+                
+                
+                Website & Logo
+                
+          
+        
+                
+                    ShiGlauer
+                    Website und Logo für eine Praxis
+                
+            
+
+            <a href="https://shiglauer.ch" target="_blank" rel="noopener" class="pw-card pw-card--large"
+                data-category="website">
+                
+                    
+                        
+                        
+                        
+                        
+                        
+                            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)"
+                                stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                                
+                                
+                                
+                            
+                            Ihr Projekt
+                        
+                    
+                
+                
+                Nächstes Projekt
+                
+          
+        
+                
+                    Ihr Unternehmen?
+                    Ihr Projekt könnte hier stehen — melden Sie sich gerne.
+                
+            
+
+        
+
+        
+        
+            
+                0
+                Kundenbewertungen ★★★★★
+            
+            
+                0
+                Jahre Erfahrung
+            
+            
+                0
+                Abgeschlossene Projekte
+            
+        
+
+        
+        
+            
+                Projekt starten
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    
+                    
+                
+            
+            Unverbindlich anfragen
+        
+
+    
+
+
+
+    (function () {
+  /* ─────────────────────────────────────
+     1. HEADLINE WORD SPLIT
+  ───────────────────────────────────── */
+  function splitTitle() {
+    const title = document.getElementById('pw-title');
+    if (!title) return;
+
+    // Walk child nodes, wrap each word in clip spans
+    const newNodes = [];
+
+    title.childNodes.forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const words = node.textContent.split(/(\s+)/);
+        words.forEach(part => {
+          if (/\S/.test(part)) {
+            const wrap = document.createElement('span');
+            wrap.className = 'pw-word-wrap';
+            const inner = document.createElement('span');
+            inner.className = 'pw-word';
+            inner.textContent = part;
+            wrap.appendChild(inner);
+            newNodes.push(wrap);
+          } else if (part) {
+            newNodes.push(document.createTextNode(part));
+          }
+        });
+      } else if (node.nodeName === 'EM') {
+        // Keep em intact, just wrap it
+        const wrap = document.createElement('span');
+        wrap.className = 'pw-word-wrap';
+        const inner = document.createElement('span');
+        inner.className = 'pw-word pw-em-word';
+        inner.appendChild(node.cloneNode(true));
+        wrap.appendChild(inner);
+        newNodes.push(wrap);
+        newNodes.push(document.createTextNode(' '));
+      } else {
+        newNodes.push(node.cloneNode(true));
+      }
+    });
+
+    title.innerHTML = '';
+    newNodes.forEach(n => title.appendChild(n));
+  }
+
+  splitTitle();
+
+  /* ─────────────────────────────────────
+     2. INTERSECTION OBSERVER – triggers
+  ───────────────────────────────────── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      io.unobserve(el);
+
+      if (el.id === 'pw-label') animateLabel(el);
+      else if (el.id === 'pw-title') animateTitle(el);
+      else if (el.id === 'pw-subtitle') animateSubtitle(el);
+      else if (el.id === 'pw-filters') animateFilters(el);
+      else if (el.classList.contains('pw-card')) animateCard(el);
+      else if (el.classList.contains('pw-stat')) animateStat(el);
+      else if (el.id === 'pw-cta') el.classList.add('pw-triggered');
+    });
+  }, { threshold: 0.15 });
+
+  // Observe everything
+  ['pw-label','pw-title','pw-subtitle','pw-filters','pw-cta'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) io.observe(el);
+  });
+
+  document.querySelectorAll('.pw-card').forEach(c => io.observe(c));
+  document.querySelectorAll('.pw-stat').forEach(s => io.observe(s));
+
+  /* ─────────────────────────────────────
+     3. ANIMATION FUNCTIONS
+  ───────────────────────────────────── */
+  function animateLabel(el) {
+    el.classList.add('pw-triggered');
+  }
+
+  function animateTitle(el) {
+    const words = el.querySelectorAll('.pw-word');
+    words.forEach((w, i) => {
+      setTimeout(() => {
+        w.classList.add('pw-word--visible');
+        if (i === words.length - 1) {
+          setTimeout(() => el.classList.add('pw-shimmer-active'), 300);
+        }
+      }, i * 110);
+    });
+  }
+
+  function animateSubtitle(el) {
+    el.classList.add('pw-triggered');
+  }
+
+  function animateFilters(el) {
+    el.querySelectorAll('.pw-filter-btn').forEach((btn, i) => {
+      setTimeout(() => btn.classList.add('pw-triggered'), i * 70);
+    });
+  }
+
+  function animateCard(el) {
+    const delay = parseFloat(el.dataset.cardDelay || 0);
+    setTimeout(() => el.classList.add('pw-triggered'), delay);
+  }
+
+  function animateStat(el) {
+    el.classList.add('pw-triggered');
+    const numEl = el.querySelector('.pw-stat__number');
+    const target = parseInt(el.dataset.target, 10);
+    const suffix = el.dataset.suffix || '';
+    if (!numEl || isNaN(target)) return;
+
+    let start = null;
+    const duration = 1400;
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function step(ts) {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      numEl.textContent = Math.round(easeOut(progress) * target) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ─────────────────────────────────────
+     4. STAGGER CARD DELAYS
+  ───────────────────────────────────── */
+  document.querySelectorAll('#pw-grid .pw-card').forEach((card, i) => {
+    card.dataset.cardDelay = i * 100;
+  });
+
+  /* ─────────────────────────────────────
+     5. 3D TILT ON CARDS (mouse)
+  ───────────────────────────────────── */
+  document.querySelectorAll('.pw-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width  - 0.5; // -0.5 to 0.5
+      const y = (e.clientY - rect.top)  / rect.height - 0.5;
+      const rotX = -y * 4;
+      const rotY =  x * 4;
+
+      card.style.transition = 'box-shadow 0.4s ease, border-color 0.3s ease';
+      card.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.015)`;
+
+      // Move shine to cursor
+      const shine = card.querySelector('.pw-card__shine');
+      if (shine) {
+        shine.style.background = `radial-gradient(circle at ${(x+0.5)*100}% ${(y+0.5)*100}%, rgba(255,255,255,0.05) 0%, transparent 60%)`;
+      }
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transition = 'transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.4s ease, border-color 0.3s ease';
+      card.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+  });
+
+  /* ─────────────────────────────────────
+     6. FILTER LOGIC
+  ───────────────────────────────────── */
+  document.querySelectorAll('.pw-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pw-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('#pw-grid .pw-card').forEach(card => {
+        card.classList.toggle('pw-hidden', filter !== 'all' && card.dataset.category !== filter);
+      });
+    });
+  });
+
+})();

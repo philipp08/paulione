@@ -1,0 +1,331 @@
+/* ============================================================
+   PauliONE — Colors & Typography
+   Brand: PauliONE (Web & Marketing Agency, Germany)
+   Tagline: Beyond Ordinary
+   ============================================================ */
+
+/* -------- Fonts -------- */
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/PlayfairDisplay-Italic.ttf") format("truetype-variations");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  /* -------- Brand Color -------- */
+  --brand-blue:        #004aad;  /* Royal Blue — primary accent */
+  --brand-blue-light:  #3a7ad4;  /* Light accent */
+  --brand-blue-dark:   #002d6b;  /* Deep accent */
+
+  /* -------- Neutrals — Light Mode -------- */
+  --bg-light:          #f5f6fa;  /* Cool off-white — primary light bg */
+  --bg-light-raised:   #ffffff;  /* Cards / raised surfaces on light */
+  --bg-light-sunken:   #eceef5;  /* Subtle inset on light */
+
+  /* -------- Neutrals — Dark Mode -------- */
+  --bg-dark:           #0a0f1e;  /* Near-black with blue tint */
+  --bg-dark-raised:    #131a30;  /* Cards / raised surfaces on dark */
+  --bg-dark-sunken:    #060a18;  /* Deeper inset on dark */
+
+  /* -------- Ink (text) — Light Mode -------- */
+  --ink-1:             #0a0f1e;  /* Primary text on light */
+  --ink-2:             #2b3146;  /* Secondary text on light */
+  --ink-3:             #6a7088;  /* Tertiary / meta text on light */
+  --ink-4:             #a7abbd;  /* Disabled / very quiet on light */
+
+  /* -------- Ink (text) — Dark Mode -------- */
+  --ink-on-dark-1:     #ffffff;  /* Primary text on dark */
+  --ink-on-dark-2:     #c9ceddff;/* Secondary text on dark */
+  --ink-on-dark-3:     #8990a8;  /* Tertiary on dark */
+  --ink-on-dark-4:     #4a5069;  /* Disabled on dark */
+
+  /* -------- Lines & dividers -------- */
+  --line-light:        #e3e5ee;
+  --line-dark:         #222a45;
+
+  /* -------- Semantic -------- */
+  --success:           #1fa971;
+  --warning:           #e9a42b;
+  --danger:            #d23c3c;
+  --info:              var(--brand-blue-light);
+
+  /* -------- Foreground/Background semantic (light default) -------- */
+  --fg-1: var(--ink-1);
+  --fg-2: var(--ink-2);
+  --fg-3: var(--ink-3);
+  --fg-4: var(--ink-4);
+  --bg-1: var(--bg-light);
+  --bg-2: var(--bg-light-raised);
+  --bg-3: var(--bg-light-sunken);
+  --line: var(--line-light);
+  --accent: var(--brand-blue);
+
+  /* -------- Typefaces -------- */
+  --font-sans: "Poppins", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-serif-italic: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* -------- Type scale (desktop) -------- */
+  --step--2: 0.75rem;   /* 12px — micro / caption */
+  --step--1: 0.875rem;  /* 14px — small */
+  --step-0:  1rem;      /* 16px — body */
+  --step-1:  1.125rem;  /* 18px — body large */
+  --step-2:  1.375rem;  /* 22px — lead */
+  --step-3:  1.75rem;   /* 28px — h4 */
+  --step-4:  2.25rem;   /* 36px — h3 */
+  --step-5:  3rem;      /* 48px — h2 */
+  --step-6:  4rem;      /* 64px — h1 */
+  --step-7:  5.5rem;    /* 88px — display */
+
+  /* -------- Line heights -------- */
+  --lh-tight:   1.05;
+  --lh-snug:    1.2;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.7;
+
+  /* -------- Letter spacing -------- */
+  --ls-tight:   -0.02em;
+  --ls-normal:  0;
+  --ls-wide:    0.06em;
+  --ls-widest:  0.18em;  /* Used on eyebrow / label caps */
+
+  /* -------- Radii -------- */
+  --r-none: 0;
+  --r-sm:   4px;
+  --r-md:   8px;
+  --r-lg:   14px;
+  --r-xl:   22px;
+  --r-pill: 999px;
+
+  /* -------- Spacing -------- */
+  --sp-0:   0;
+  --sp-1:   4px;
+  --sp-2:   8px;
+  --sp-3:   12px;
+  --sp-4:   16px;
+  --sp-5:   24px;
+  --sp-6:   32px;
+  --sp-7:   48px;
+  --sp-8:   64px;
+  --sp-9:   96px;
+  --sp-10:  128px;
+
+  /* -------- Shadows (light) -------- */
+  --shadow-xs: 0 1px 2px rgba(10, 15, 30, 0.04);
+  --shadow-sm: 0 2px 6px rgba(10, 15, 30, 0.06);
+  --shadow-md: 0 8px 24px rgba(10, 15, 30, 0.08);
+  --shadow-lg: 0 20px 60px rgba(10, 15, 30, 0.12);
+  --shadow-blue: 0 18px 40px -12px rgba(0, 74, 173, 0.45);
+
+  /* -------- Motion -------- */
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-out:      cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in:       cubic-bezier(0.4, 0.0, 1, 1);
+  --dur-fast:      140ms;
+  --dur-base:      220ms;
+  --dur-slow:      420ms;
+
+  /* -------- Layout -------- */
+  --container-max: 1240px;
+  --container-pad: clamp(20px, 4vw, 48px);
+}
+
+/* Dark theme override */
+[data-theme="dark"] {
+  --fg-1: var(--ink-on-dark-1);
+  --fg-2: var(--ink-on-dark-2);
+  --fg-3: var(--ink-on-dark-3);
+  --fg-4: var(--ink-on-dark-4);
+  --bg-1: var(--bg-dark);
+  --bg-2: var(--bg-dark-raised);
+  --bg-3: var(--bg-dark-sunken);
+  --line: var(--line-dark);
+}
+
+/* ============================================================
+   SEMANTIC TYPE
+   ============================================================ */
+
+.p1-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--step--2);
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.p1-display {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--step-7);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--fg-1);
+}
+
+.p1-h1 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--step-6);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--fg-1);
+}
+
+.p1-h2 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--step-5);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
+  color: var(--fg-1);
+}
+
+.p1-h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--step-4);
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+}
+
+.p1-h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--step-3);
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+}
+
+/* The signature headline accent — Playfair Display Italic in brand blue */
+.p1-accent {
+  font-family: var(--font-serif-italic);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: 0;
+}
+
+.p1-lead {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--step-2);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-2);
+}
+
+.p1-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--step-0);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-2);
+}
+
+.p1-body-sm {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--step--1);
+  line-height: var(--lh-normal);
+  color: var(--fg-3);
+}
+
+.p1-caption {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--step--2);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-wide);
+  color: var(--fg-3);
+}
+
+.p1-mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--step--1);
+  letter-spacing: var(--ls-normal);
+  color: var(--fg-2);
+}
+
+/* Pull quote — uses Playfair Italic */
+.p1-quote {
+  font-family: var(--font-serif-italic);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--step-4);
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+html, body {
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg-1);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
