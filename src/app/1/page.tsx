@@ -1,154 +1,144 @@
-'use client';
+// ─── Word Reveal ─────────────────────────────────────────────────────────────
 
-import React, { useState, useEffect, useRef } from 'react';
-import './site.css';
-import { Header } from '@/components/landing/Header';
+function WordReveal({ text, className = '', as: As = 'span', delay = 0, accentWords = [] }: { text: string; className?: string; as?: any; delay?: number; accentWords?: string[] }) {
+  const ref = useReveal(0.2);
+  const words = text.split(' ');
+  return (
+    <As ref={ref} className={`p1-words ${className}`}>
+      {words.map((w, i) => {
+        const isAccent = accentWords.includes(w.replace(/[.,!?]/g, ''));
+        return (
+          <span className="word" key={i}>
+            <span 
+              className={`word-inner ${isAccent ? 'p1-accent' : ''}`}
+              style={{ transitionDelay: `${delay + i * 40}ms` }}
+            >
+              {w}{i < words.length - 1 ? '\u00A0' : ''}
+            </span>
+          </span>
+        );
+      })}
+    </As>
+  );
+}
 
-// ─── Mock Visuals (SVG placeholders) ────────────────────────────────────────
+// ─── Referenzen Block ────────────────────────────────────────────────────────
 
-function MockVisual({ kind = 'web' }: { kind: string }) {
-  const shared = { width: '100%', height: '100%', display: 'block' as const };
-  const vb = '0 0 1600 900';
-  const pr = 'xMidYMid slice';
+const REF_PROJECTS = [
+  { id: 1, cat: 'Onlineshop', size: 'large', client: 'MK-Nailshop', title: 'Beauty E-Commerce Experience', img: 'https://onecdn.io/media/a457180b-662e-408f-8a2b-e44893cbd5b6/lg' },
+  { id: 2, cat: 'Website', size: 'medium', client: 'Fotografie Eschbach', title: 'Portfolio für High-End Fotografie', img: 'https://onecdn.io/media/53053911-902b-4f5c-8d2e-2b59b4723f04/lg' },
+  { id: 3, cat: 'Website & Logo', size: 'medium', client: 'ShiGlauer', title: 'Branding & Web für Gastro-Consulting', img: 'https://onecdn.io/media/e12013e6-f059-47b7-84cb-a362c2f040f6/lg' },
+  { id: 4, cat: 'Marketing', size: 'small', client: 'Meyer & Kersting', title: 'Social Media & Performance Ads', img: 'https://onecdn.io/media/5a3092ab-c0c1-4640-99d9-8daee4ed0fb5/lg' },
+  { id: 5, cat: 'Werbemittel', size: 'small', client: 'Aldaerry', title: 'Premium Produktetiketten Design', img: 'https://onecdn.io/media/1a0cc727-af22-4b4e-9f35-24b6267c89b8/lg' },
+];
 
-  const visuals: Record<string, React.ReactNode> = {
-    web: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <defs><linearGradient id="v1webBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#0a0f1e"/><stop offset="100%" stopColor="#000"/></linearGradient></defs>
-        <rect width="1600" height="900" fill="url(#v1webBg)"/>
-        <rect x="60" y="60" width="1480" height="780" rx="10" fill="#f5f6fa"/>
-        <rect x="60" y="60" width="1480" height="44" rx="10" fill="#e3e5ee"/>
-        <circle cx="92" cy="82" r="6" fill="#cfd2dd"/><circle cx="116" cy="82" r="6" fill="#cfd2dd"/><circle cx="140" cy="82" r="6" fill="#cfd2dd"/>
-        <rect x="200" y="70" width="320" height="22" rx="11" fill="#fff"/>
-        <rect x="120" y="160" width="220" height="14" rx="3" fill="#004aad"/>
-        <text x="120" y="320" fontFamily="system-ui" fontWeight="700" fontSize="110" fill="#0a0f1e" letterSpacing="-4">Webdesign,</text>
-        <text x="120" y="430" fontFamily="system-ui" fontWeight="700" fontSize="110" fill="#0a0f1e">das</text>
-        <text x="310" y="430" fontFamily="Georgia" fontStyle="italic" fontSize="110" fill="#004aad">begeistert.</text>
-        <rect x="120" y="500" width="180" height="50" rx="8" fill="#004aad"/>
-        <rect x="1080" y="160" width="380" height="500" rx="10" fill="#e3e5ee"/>
-        <circle cx="1270" cy="410" r="120" fill="#3a7ad4" opacity=".25"/>
-        <circle cx="1270" cy="410" r="60" fill="#004aad" opacity=".4"/>
-      </svg>
-    ),
-    brand: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <rect width="1600" height="900" fill="#f5f6fa"/>
-        <rect x="0" y="0" width="700" height="900" fill="#004aad"/>
-        <text x="350" y="520" fontFamily="system-ui" fontWeight="700" fontSize="320" fill="#fff" textAnchor="middle" letterSpacing="-12">N</text>
-        <rect x="700" y="0" width="900" height="450" fill="#000"/>
-        <text x="1150" y="270" fontFamily="Georgia" fontStyle="italic" fontSize="120" fill="#3a7ad4" textAnchor="middle">nordlicht.</text>
-        <rect x="700" y="450" width="450" height="450" fill="#fff"/>
-        <circle cx="925" cy="675" r="140" fill="#004aad"/>
-        <rect x="1150" y="450" width="450" height="225" fill="#3a7ad4"/>
-        <rect x="1150" y="675" width="450" height="225" fill="#002d6b"/>
-      </svg>
-    ),
-    editorial: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <rect width="1600" height="900" fill="#000"/>
-        <text x="80" y="360" fontFamily="system-ui" fontWeight="700" fontSize="260" fill="#fff" letterSpacing="-12">Atelier</text>
-        <text x="80" y="580" fontFamily="Georgia" fontStyle="italic" fontSize="210" fill="#3a7ad4">moderne.</text>
-        <rect x="80" y="680" width="900" height="1" fill="rgba(255,255,255,.2)"/>
-        <text x="80" y="740" fontFamily="system-ui" fontSize="20" fill="rgba(255,255,255,.6)" letterSpacing="6">ISSUE 04 — FRÜHJAHR 2026</text>
-        <rect x="1100" y="640" width="420" height="220" rx="10" fill="#0d0d0d"/>
-        <circle cx="1310" cy="750" r="80" fill="#004aad"/>
-      </svg>
-    ),
-    studio: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <defs><linearGradient id="v1studioBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#1a2240"/><stop offset="100%" stopColor="#000"/></linearGradient></defs>
-        <rect width="1600" height="900" fill="url(#v1studioBg)"/>
-        <rect x="450" y="240" width="700" height="380" rx="14" fill="#000" stroke="#222a45" strokeWidth="3"/>
-        <rect x="470" y="260" width="660" height="340" rx="6" fill="#001a4a"/>
-        <rect x="500" y="290" width="240" height="14" rx="3" fill="#3a7ad4"/>
-        <rect x="500" y="320" width="500" height="8" rx="2" fill="rgba(255,255,255,.25)"/>
-        <rect x="500" y="340" width="420" height="8" rx="2" fill="rgba(255,255,255,.25)"/>
-        <rect x="500" y="400" width="160" height="60" rx="6" fill="#004aad"/>
-        <circle cx="1260" cy="450" r="80" fill="#3a7ad4" opacity="0.35"/>
-      </svg>
-    ),
-    portrait: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <defs><linearGradient id="v1portBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#3a7ad4"/><stop offset="100%" stopColor="#000"/></linearGradient></defs>
-        <rect width="1600" height="900" fill="url(#v1portBg)"/>
-        <circle cx="800" cy="380" r="180" fill="rgba(0,0,0,.6)"/>
-        <ellipse cx="800" cy="780" rx="320" ry="280" fill="rgba(0,0,0,.6)"/>
-        <text x="800" y="870" fontFamily="Georgia" fontStyle="italic" fontSize="56" fill="rgba(255,255,255,.55)" textAnchor="middle">Philipp</text>
-      </svg>
-    ),
-    process: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <rect width="1600" height="900" fill="#0d0d0d"/>
-        <g stroke="rgba(255,255,255,.15)" strokeWidth="1" fill="none">
-          {Array.from({length:9}).map((_,i)=><line key={`h${i}`} x1="0" y1={100*(i+1)} x2="1600" y2={100*(i+1)}/>)}
-          {Array.from({length:15}).map((_,i)=><line key={`v${i}`} x1={100*(i+1)} y1="0" x2={100*(i+1)} y2="900"/>)}
-        </g>
-        <rect x="640" y="200" width="380" height="500" rx="6" fill="#004aad" opacity="0.25"/>
-        <rect x="640" y="200" width="380" height="500" rx="6" fill="none" stroke="#3a7ad4" strokeWidth="2.5"/>
-        <text x="680" y="280" fontFamily="system-ui" fontSize="32" fill="#fff" fontWeight="600">Wireframe</text>
-        <rect x="1080" y="450" width="320" height="40" rx="4" fill="#3a7ad4"/>
-        <circle cx="320" cy="640" r="80" fill="none" stroke="#fff" strokeWidth="2"/>
-        <circle cx="320" cy="640" r="24" fill="#3a7ad4"/>
-      </svg>
-    ),
-    photo1: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <defs><linearGradient id="v1ph1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#1a2a4a"/><stop offset="100%" stopColor="#000"/></linearGradient></defs>
-        <rect width="1600" height="900" fill="url(#v1ph1)"/>
-        <polygon points="0,640 160,560 160,640 280,640 280,500 400,500 400,640 560,640 560,440 720,440 720,640 880,640 880,520 1040,520 1040,640 1200,640 1200,460 1360,460 1360,640 1600,640 1600,900 0,900" fill="#000"/>
-        <circle cx="1280" cy="280" r="100" fill="rgba(58,122,212,.3)"/>
-        <text x="80" y="120" fontFamily="system-ui" fontSize="16" fill="rgba(255,255,255,.5)" letterSpacing="8">FRANKFURT 06:42</text>
-      </svg>
-    ),
-    photo2: (
-      <svg viewBox={vb} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio={pr} style={shared}>
-        <rect width="1600" height="900" fill="#0d0d0d"/>
-        <g fill="#1a2240">
-          {Array.from({length:6}).map((_,r)=>Array.from({length:18}).map((__,c)=>(
-            <rect key={`${r}-${c}`} x={120+c*78} y={220+r*82} width="64" height="64" rx="8"/>
-          )))}
-        </g>
-        <rect x="120" y="220" width="1422" height="500" fill="none" stroke="rgba(58,122,212,.4)" strokeWidth="1"/>
-        <text x="80" y="120" fontFamily="system-ui" fontSize="16" fill="rgba(255,255,255,.5)" letterSpacing="8">CODE / 01:14</text>
-      </svg>
-    ),
+function P1Referenzen() {
+  const [filter, setFilter] = useState('Alle');
+  const filtered = filter === 'Alle' ? REF_PROJECTS : REF_PROJECTS.filter(p => p.cat.includes(filter));
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const xc = rect.width / 2;
+    const yc = rect.height / 2;
+    const dx = x - xc;
+    const dy = y - yc;
+    
+    card.style.transform = `perspective(1000px) rotateY(${dx / 20}deg) rotateX(${-dy / 20}deg) translateY(-5px) scale(1.02)`;
+    const shine = card.querySelector('.pw-card__shine') as HTMLElement;
+    if (shine) {
+      shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.12) 0%, transparent 80%)`;
+    }
   };
-  return <>{visuals[kind] || visuals.web}</>;
-}
 
-// ─── Reveal hook ─────────────────────────────────────────────────────────────
+  const handleMouseLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.transform = '';
+  };
 
-function useReveal(threshold = 0.2) {
-  const ref = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) { e.target.classList.add('is-in'); obs.unobserve(e.target); }
-        });
-      },
-      { threshold, rootMargin: '0px 0px -10% 0px' }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return ref;
-}
+  return (
+    <section className="pw-refs" id="v1-referenzen" data-nav-theme="dark">
+      <div className="pw-container">
+        <Reveal className="pw-section-label"><span>Portfolio</span></Reveal>
+        <h2 className="pw-section-title">
+          <WordReveal text="Ergebnisse, die für sich sprechen." accentWords={['sprechen.']} />
+        </h2>
+        <Reveal className="pw-section-subtitle">
+          Eine Auswahl an Projekten, die wir in den letzten Monaten für unsere Kunden umgesetzt haben.
+        </Reveal>
 
-interface RevealProps {
-  children: React.ReactNode;
-  as?: keyof React.JSX.IntrinsicElements;
-  className?: string;
-  delay?: number;
-  [key: string]: unknown;
-}
+        <div className="pw-filters">
+          {['Alle','Website','Branding','Marketing'].map((f, i) => (
+            <Reveal key={f} delay={i * 40}>
+              <button 
+                className={`pw-filter-btn ${filter === f ? 'active' : ''}`} 
+                onClick={() => setFilter(f)}
+                data-cursor="hover"
+              >
+                {f}
+              </button>
+            </Reveal>
+          ))}
+        </div>
 
-function Reveal({ children, as: As = 'div', className = '', delay = 0, ...rest }: RevealProps) {
-  const ref = useReveal();
-  const style = delay ? { transitionDelay: `${delay}ms` } : undefined;
-  return React.createElement(As, { ref, className: `p1-reveal ${className}`, style, ...rest }, children);
+        <div className="pw-grid">
+          {filtered.map((p, i) => (
+            <a 
+              key={p.id} 
+              href="#" 
+              className={`pw-card pw-card--${p.size} p1-reveal`}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{ transitionDelay: `${i * 60}ms` }}
+              data-cursor="hover"
+            >
+              <div className="pw-card__img-wrap">
+                <img src={p.img} alt={p.client} className="pw-card__img" loading="lazy" />
+              </div>
+              <div className="pw-card__shine" />
+              <div className="pw-card__badge">{p.cat}</div>
+              <div className="pw-card__ext">
+                <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+              </div>
+              <div className="pw-card__body">
+                <div className="pw-card__client">{p.client}</div>
+                <h3 className="pw-card__title">{p.title}</h3>
+              </div>
+            </a>
+          ))}
+          
+          <a href="/anfrage" className="pw-card pw-card--small p1-reveal" style={{ transitionDelay: `${filtered.length * 60}ms` }} data-cursor="hover">
+            <div className="pw-card__img-wrap" style={{ display:'flex', alignItems:'center', justifyContent:'center', background:'#080808' }}>
+              <div style={{ textAlign:'center' }}>
+                <div style={{ width:48, height:48, borderRadius:'50%', border:'1px dashed rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 12px' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+                </div>
+                <div style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.4)' }}>Ihr Projekt</div>
+              </div>
+            </div>
+            <div className="pw-card__body">
+              <div className="pw-card__client">Zukunft</div>
+              <h3 className="pw-card__title">Wann starten wir gemeinsam durch?</h3>
+            </div>
+          </a>
+        </div>
+
+        <div className="pw-stats">
+          {[
+            { n: '100%', l: 'Zufriedenheit' },
+            { n: '48h', l: 'Antwortzeit' },
+            { n: '4.9/5', l: 'Bewertung' }
+          ].map((s, i) => (
+            <div key={i} className="pw-stat p1-reveal" style={{ transitionDelay: `${i * 100}ms` }}>
+              <div className="pw-stat__number p1-accent">{s.n}</div>
+              <div className="pw-stat__label">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 // ─── Custom Cursor ───────────────────────────────────────────────────────────
@@ -231,20 +221,12 @@ function P1Hero({ heroDark, heroHeadline }: { heroDark: boolean; heroHeadline: s
     return () => el.removeEventListener('mousemove', onMove);
   }, []);
 
-  const headlines: Record<string, { line1: string; line2a: string; line2b: string }> = {
-    begeistert: { line1: 'Webdesign,', line2a: 'das', line2b: 'begeistert.' },
-    verkaufen:  { line1: 'Webseiten,', line2a: 'die', line2b: 'verkaufen.' },
-    charakter:  { line1: 'Marken mit', line2a: '', line2b: 'Charakter.' },
+  const headlines: Record<string, { line1: string; line2a: string; line2b: string; accent: string[] }> = {
+    begeistert: { line1: 'Webdesign,', line2a: 'das', line2b: 'begeistert.', accent: ['begeistert.'] },
+    verkaufen:  { line1: 'Webseiten,', line2a: 'die', line2b: 'verkaufen.', accent: ['verkaufen.'] },
+    charakter:  { line1: 'Marken mit', line2a: '', line2b: 'Charakter.', accent: ['Charakter.'] },
   };
   const h = headlines[heroHeadline] || headlines.begeistert;
-
-  const wi = (delay: number, content: React.ReactNode, extra = '') => (
-    <span className="word">
-      <span className={`word-inner ${extra}`} style={{ transitionDelay: `${delay}ms`, transform: mounted ? 'translateY(0)' : 'translateY(110%)' }}>
-        {content}
-      </span>
-    </span>
-  );
 
   return (
     <section
@@ -268,16 +250,11 @@ function P1Hero({ heroDark, heroHeadline }: { heroDark: boolean; heroHeadline: s
           <span>Webdesign &amp; Marken · Frankfurt · seit 2021</span>
         </div>
         <h1 className="p1-hero__title">
-          <span className="p1-words" style={{ display: 'block' }}>
-            {wi(60, h.line1)}
+          <span style={{ display: 'block' }}>
+            <WordReveal text={h.line1} delay={60} accentWords={[]} />
           </span>
           <span style={{ display: 'block' }}>
-            {h.line2a && (
-              <>
-                <span className="p1-words">{wi(160, h.line2a)}</span>{' '}
-              </>
-            )}
-            <span className="p1-words">{wi(260, h.line2b, 'p1-accent')}</span>
+            <WordReveal text={`${h.line2a} ${h.line2b}`} delay={160} accentWords={h.accent} />
           </span>
         </h1>
 
@@ -405,7 +382,9 @@ function P1Services({ dark }: { dark: boolean }) {
         <div className="p1-sec-head">
           <div className="p1-sec-head__title">
             <Reveal><div className="p1-eyebrow"><span>Leistungen</span></div></Reveal>
-            <Reveal as="h2" className="p1-h2" delay={80}>Vier Disziplinen.<br/><span className="p1-accent">Ein Anspruch.</span></Reveal>
+            <h2 className="p1-h2">
+              <WordReveal text="Vier Disziplinen. Ein Anspruch." accentWords={['Anspruch.']} delay={80} />
+            </h2>
             <Reveal as="p" className="p1-lead" delay={160}>Strategie, Gestaltung und Umsetzung — als integriertes Team. Klicken Sie auf eine Leistung für Details.</Reveal>
           </div>
           <Reveal className="p1-sec-head__meta" delay={240}><span>04 — Disziplinen</span></Reveal>
@@ -448,21 +427,21 @@ function P1Pinned() {
       <div className="p1-pinned__inner">
         <div className="p1-pinned__sticky">
           <Reveal><div className="p1-pinned__counter">— ÜBER PAULIONE</div></Reveal>
-          <Reveal>
-            <h2 className="p1-pinned__title">Eine Person.<br/><span className="p1-accent">Eine Vision.</span></h2>
-          </Reveal>
-          <Reveal as="p" className="p1-pinned__body" delay={80}>
+          <h2 className="p1-pinned__title">
+            <WordReveal text="Eine Person. Eine Vision." accentWords={['Vision.']} delay={80} />
+          </h2>
+          <Reveal as="p" className="p1-pinned__body" delay={160}>
             PauliONE ist kein Großbüro. Sondern Philipp — und ein kleines Netzwerk aus spezialisierten Partner:innen, das pro Projekt zusammengestellt wird.
           </Reveal>
-          <Reveal as="p" className="p1-pinned__body" delay={160}>
+          <Reveal as="p" className="p1-pinned__body" delay={240}>
             Das bedeutet: kein Account-Manager zwischen Ihnen und der Person, die das Projekt baut. Direkter Draht, kürzere Wege, bessere Ergebnisse.
           </Reveal>
-          <Reveal className="p1-pinned__sig" delay={240}>— „Webdesign, das begeistert."</Reveal>
+          <Reveal className="p1-pinned__sig" delay={320}>— „Webdesign, das begeistert."</Reveal>
           <div className="p1-pinned__stats">
             {stats.map((s, i) => (
-              <Reveal key={i} delay={i * 80}>
+              <Reveal key={i} delay={i * 80 + 320}>
                 <div>
-                  <div className="p1-pinned__stat-num">{s.num}</div>
+                  <div className="p1-pinned__stat-num p1-accent">{s.num}</div>
                   <div className="p1-pinned__stat-label">{s.label}</div>
                 </div>
               </Reveal>
@@ -497,7 +476,9 @@ function P1Portfolio() {
         <div className="p1-sec-head">
           <div className="p1-sec-head__title">
             <Reveal><div className="p1-eyebrow"><span>Ausgewählte Arbeiten</span></div></Reveal>
-            <Reveal as="h2" className="p1-h2" delay={80}>Drei Projekte.<br/><span className="p1-accent">Drei Ansätze.</span></Reveal>
+            <h2 className="p1-h2">
+              <WordReveal text="Drei Projekte. Drei Ansätze." accentWords={['Ansätze.']} delay={80} />
+            </h2>
           </div>
           <Reveal delay={160} className="p1-sec-head__meta">2024 — 2026</Reveal>
         </div>
@@ -507,7 +488,9 @@ function P1Portfolio() {
           <div className="p1-case__text">
             <Reveal><div className="p1-case__num">CASE — {c.n}</div></Reveal>
             <Reveal delay={60}><div className="p1-case__client">{c.client}</div></Reveal>
-            <Reveal delay={120} as="h3" className="p1-case__title">{c.title}<br/><span className="p1-accent">{c.accentEnd}</span></Reveal>
+            <h3 className="p1-case__title">
+              <WordReveal text={`${c.title} ${c.accentEnd}`} accentWords={[c.accentEnd.replace('.','').trim()]} delay={120} />
+            </h3>
             <Reveal delay={200} as="p" className="p1-case__body">{c.body}</Reveal>
             <Reveal delay={280}><div className="p1-case__tags">{c.tags.map((t,i)=><span key={i} className="p1-case__tag">{t}</span>)}</div></Reveal>
             <Reveal delay={340}><a className="p1-case__view" href="#" data-cursor="hover">Case ansehen <span>→</span></a></Reveal>
@@ -558,7 +541,9 @@ function P1HScroll() {
         <div className="p1-sec-head">
           <div className="p1-sec-head__title">
             <Reveal><div className="p1-eyebrow"><span>Prozess</span></div></Reveal>
-            <Reveal as="h2" className="p1-h2" delay={80}>Sechs Schritte.<br/><span className="p1-accent">Klare Kanten.</span></Reveal>
+            <h2 className="p1-h2">
+              <WordReveal text="Sechs Schritte. Klare Kanten." accentWords={['Kanten.']} delay={80} />
+            </h2>
             <Reveal as="p" className="p1-lead" delay={160}>Vom ersten Gespräch bis zur Wartung — jeder Schritt mit definiertem Output und festem Zeitrahmen.</Reveal>
           </div>
           <Reveal delay={200} className="p1-sec-head__meta">06 — Schritte</Reveal>
@@ -651,9 +636,9 @@ function P1Stack() {
         <div className="p1-stack__head-grid">
           <div>
             <Reveal><div className="p1-eyebrow"><span>Visuelle DNA</span></div></Reveal>
-            <Reveal as="h2" className="p1-stack__head-title" delay={80}>
-              In Bildern.<br/><span className="p1-accent">Beyond ordinary.</span>
-            </Reveal>
+            <h2 className="p1-stack__head-title">
+              <WordReveal text="In Bildern. Beyond ordinary." accentWords={['ordinary.']} delay={80} />
+            </h2>
           </div>
           <Reveal className="p1-stack__head-meta" delay={160}>
             <div className="p1-stack__head-meta-num">{String(STACK_CARDS.length).padStart(2,'0')} — Bilder</div>
@@ -692,10 +677,10 @@ function P1CtaBanner() {
   return (
     <section className="p1-cta-banner" data-nav-theme="light">
       <div className="p1-container">
-        <Reveal as="h2" className="p1-cta-banner__title">
-          Lassen Sie uns<br/><span className="p1-accent">etwas Gutes bauen.</span>
-        </Reveal>
-        <Reveal delay={120}>
+        <h2 className="p1-cta-banner__title">
+          <WordReveal text="Lassen Sie uns etwas Gutes bauen." accentWords={['bauen.']} />
+        </h2>
+        <Reveal delay={200}>
           <a href="#v1-kontakt" className="p1-btn p1-btn--primary" data-cursor="hover">
             Erstgespräch anfragen <span className="arr">→</span>
           </a>
@@ -742,7 +727,9 @@ function P1Contact() {
         <div className="p1-contact">
           <div className="p1-contact__info">
             <Reveal><div className="p1-eyebrow"><span>Kontakt</span></div></Reveal>
-            <Reveal as="h2" className="p1-contact__big" delay={80}>Sprechen wir<br/><span className="p1-accent">über Ihr Projekt.</span></Reveal>
+            <h2 className="p1-contact__big">
+              <WordReveal text="Sprechen wir über Ihr Projekt." accentWords={['Projekt.']} delay={80} />
+            </h2>
             <Reveal as="p" className="p1-lead" delay={160}>Erstgespräche dauern 30–60 Minuten und sind kostenlos. Sie hören innerhalb von 48 Stunden zurück — persönlich von Philipp.</Reveal>
             <Reveal delay={240}>
               <div className="p1-contact__links">
@@ -864,6 +851,7 @@ export default function DesignVariant1() {
       <P1Services dark={false} />
       <P1Pinned />
       <P1Portfolio />
+      <P1Referenzen />
       <P1HScroll />
       <P1Stack />
       <P1CtaBanner />
@@ -872,3 +860,4 @@ export default function DesignVariant1() {
     </div>
   );
 }
+
