@@ -132,7 +132,7 @@ export function Header() {
                 >
                   <Link
                     href={menu.href}
-                    className={`flex items-center px-4 py-2 rounded-lg text-[14px] font-medium transition-all duration-200 ${
+                    className={`flex items-center px-4 py-2 rounded-lg text-[13.5px] font-normal tracking-wide transition-all duration-200 ${
                       activeMenu === menu.label
                         ? "text-white bg-white/[0.06]"
                         : "text-gray-400 hover:text-white"
@@ -152,45 +152,47 @@ export function Header() {
                         transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
                         className="absolute top-full left-1/2 -translate-x-1/2 pt-4 flex flex-col items-center pointer-events-auto"
                       >
-                        {/* Dropdown Card */}
-                        <div className="w-[620px] flex rounded-[24px] overflow-hidden bg-[#0D0D0D]/90 backdrop-blur-3xl border border-white/[0.1] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                        {/* Dropdown Card                         <div className="w-[720px] flex rounded-[24px] overflow-hidden bg-[#0D0D0D]/95 backdrop-blur-3xl border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
                           {/* Links Side */}
-                          <div className="flex-1 p-5 grid grid-cols-1 gap-0.5">
+                          <div className="flex-[1.2] p-6 grid grid-cols-2 gap-x-4 gap-y-1">
                             {menu.items.map((item, idx) => (
                               <Link
                                 key={idx}
                                 href={item.href}
-                                className="group p-3 rounded-xl transition-all duration-200 hover:bg-white/[0.04]"
+                                className="group p-3.5 rounded-xl transition-all duration-200 hover:bg-white/[0.03] border border-transparent hover:border-white/[0.05]"
                               >
-                                <div className="text-[14.5px] font-semibold text-white group-hover:translate-x-0.5 transition-transform duration-200">
+                                <div className="text-[14px] font-medium text-white group-hover:text-[#3a8fff] transition-colors duration-200">
                                   {item.title}
                                 </div>
                                 {item.description && (
-                                  <div className="text-[12.5px] text-gray-400 mt-0.5 leading-relaxed">
+                                  <div className="text-[12px] text-gray-500 mt-1 leading-relaxed font-light">
                                     {item.description}
                                   </div>
                                 )}
                               </Link>
                             ))}
                           </div>
-
+ 
                           {/* Featured Side */}
                           {menu.featured && (
-                            <div className="w-[240px] p-6 bg-white/[0.02] border-l border-white/[0.05] flex flex-col justify-between">
-                              <div>
-                                <span className="text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase">
+                            <div className="flex-1 p-8 bg-gradient-to-br from-[#004aad]/10 via-transparent to-transparent border-l border-white/[0.05] flex flex-col justify-between relative overflow-hidden group/featured">
+                              <div className="absolute top-0 right-0 w-32 h-32 bg-[#004aad]/20 blur-[60px] rounded-full -mr-16 -mt-16 transition-transform duration-700 group-hover/featured:scale-150" />
+                              <div className="relative z-10">
+                                <span className="text-[9px] font-bold tracking-[0.2em] text-[#3a8fff] uppercase">
                                   {menu.featured.label}
                                 </span>
-                                <h4 className="text-[15px] font-bold text-white mt-2 leading-tight">
+                                <h4 className="text-[17px] font-medium text-white mt-3 leading-snug">
                                   {menu.featured.title}
                                 </h4>
                               </div>
                               <Link
                                 href={menu.featured.ctaHref}
-                                className="group inline-flex items-center gap-2 text-[13px] font-bold text-white mt-4"
+                                className="relative z-10 group/btn inline-flex items-center gap-2.5 text-[12.5px] font-semibold text-white mt-6 w-fit"
                               >
-                                {menu.featured.cta}
-                                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                                <span className="border-b border-white/20 pb-0.5 group-hover/btn:border-[#3a8fff] transition-colors">
+                                  {menu.featured.cta}
+                                </span>
+                                <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform text-[#3a8fff]" />
                               </Link>
                             </div>
                           )}
@@ -206,7 +208,7 @@ export function Header() {
           <div className="flex items-center gap-8 ml-auto">
             <Link
               href="/anfrage"
-              className="text-[14px] font-bold px-6 py-2.5 rounded-full bg-white text-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-black/5"
+              className="text-[13.5px] font-medium px-6 py-2.5 rounded-full bg-white text-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-black/5"
             >
               Angebot einholen
             </Link>
@@ -348,9 +350,9 @@ export function Header() {
                               onClick={() => toggleMobileExpanded(menu.label)}
                               className="w-full flex items-center justify-between py-4 text-left group"
                             >
-                              <span className="text-[28px] font-semibold text-white leading-tight tracking-[-0.02em]">
-                                {menu.label}
-                              </span>
+                                <span className="text-[26px] font-light text-white leading-tight tracking-[-0.01em]">
+                                  {menu.label}
+                                </span>
                               <motion.div
                                 animate={{ rotate: mobileExpanded === menu.label ? 45 : 0 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -384,7 +386,7 @@ export function Header() {
                                         <Link
                                           href={item.href}
                                           onClick={() => setMobileOpen(false)}
-                                          className="block py-1.5 text-[16px] font-medium text-gray-400 hover:text-white transition-colors"
+                                          className="block py-1.5 text-[15.5px] font-light text-gray-400 hover:text-white transition-colors"
                                         >
                                           {item.title}
                                         </Link>
@@ -399,7 +401,7 @@ export function Header() {
                           <Link
                             href={menu.href}
                             onClick={() => setMobileOpen(false)}
-                            className="block py-4 text-[28px] font-semibold text-white leading-tight tracking-[-0.02em] hover:opacity-60 transition-opacity"
+                            className="block py-4 text-[26px] font-light text-white leading-tight tracking-[-0.01em] hover:opacity-60 transition-opacity"
                           >
                             {menu.label}
                           </Link>
