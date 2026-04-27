@@ -11,28 +11,28 @@ export default function UeberMich() {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }
   };
 
   const blurUp = {
     initial: { opacity: 0, filter: "blur(6px)", y: 18 },
     whileInView: { opacity: 1, filter: "blur(0)", y: 0 },
     viewport: { once: true },
-    transition: { duration: 0.75, ease: "easeOut" }
+    transition: { duration: 0.75, ease: "easeOut" as const }
   };
 
   const slideInRight = {
     initial: { opacity: 0, x: -32 },
     whileInView: { opacity: 1, x: 0 },
     viewport: { once: true },
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }
   };
 
   const slideInLeft = {
     initial: { opacity: 0, x: 32 },
     whileInView: { opacity: 1, x: 0 },
     viewport: { once: true },
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }
   };
 
   return (
@@ -82,7 +82,7 @@ export default function UeberMich() {
                 Kein Konzern im Hintergrund. Kein anonymes Team. Nur ich — mit echtem Interesse an Ihrem Projekt.
               </motion.p>
 
-              <motion.div className="hero-actions" {...blurUp} transition={{ delay: 0.15 }}>
+              <motion.div className="hero-actions" {...blurUp} transition={{ duration: 0.75, ease: "easeOut" as const, delay: 0.15 }}>
                 <a href="/anfrage" className="pone-btn">
                   Jetzt Projekt anfragen
                   <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
@@ -129,7 +129,7 @@ export default function UeberMich() {
               <h2 className="intro-h2 do-shimmer">
                 Ich glaube daran, dass gutes Design <span className="pone-em">echte Wirkung</span> entfaltet.
               </h2>
-              <motion.blockquote className="pull-quote" {...blurUp} transition={{ delay: 0.2 }}>
+              <motion.blockquote className="pull-quote" {...blurUp} transition={{ duration: 0.75, ease: "easeOut" as const, delay: 0.2 }}>
                 „Eine Website ist kein Selbstzweck — sie soll Vertrauen schaffen, Fragen beantworten und Türen öffnen."
               </motion.blockquote>
             </motion.div>
@@ -164,7 +164,7 @@ export default function UeberMich() {
               <span className="pone-badge-dot"></span>
               Mein Weg
             </motion.div>
-            <motion.h2 className="tl-h2 do-shimmer" {...fadeInUp} transition={{ delay: 0.1 }}>
+            <motion.h2 className="tl-h2 do-shimmer" {...fadeInUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay: 0.1 }}>
               Vom ersten Projekt zur <span className="pone-em">echten Agentur.</span>
             </motion.h2>
             <motion.p className="text-gray-400 max-w-lg mx-auto" {...blurUp}>
@@ -219,7 +219,7 @@ export default function UeberMich() {
                   )
                 }
               ].map((item, idx) => (
-                <motion.div key={idx} className="tl-item group" {...fadeInUp} transition={{ delay: idx * 0.1 }}>
+                <motion.div key={idx} className="tl-item group" {...fadeInUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay: idx * 0.1 }}>
                   <div className="tl-node group-hover:scale-110 transition-transform duration-300">
                     <span className="tl-node-num">0{idx + 1}</span>
                     {item.icon}
@@ -291,7 +291,7 @@ export default function UeberMich() {
                 icon: <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
               }
             ].map((val, idx) => (
-              <motion.div key={idx} className="val-cell" {...fadeInUp} transition={{ delay: idx * 0.1 }}>
+              <motion.div key={idx} className="val-cell" {...fadeInUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay: idx * 0.1 }}>
                 <div className="val-num-label"><span className="val-num-line"></span>{val.num}</div>
                 <div className="val-icon">{val.icon}</div>
                 <h3 className="val-title">{val.title}</h3>
@@ -385,7 +385,7 @@ export default function UeberMich() {
                 initial: "M"
               }
             ].map((testi, idx) => (
-              <motion.div key={idx} className="testi-card" {...fadeInUp} transition={{ delay: idx * 0.1 }}>
+              <motion.div key={idx} className="testi-card" {...fadeInUp} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay: idx * 0.1 }}>
                 <div className="testi-stars">
                   {[...Array(5)].map((_, i) => (
                     <svg key={i} viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
