@@ -222,7 +222,7 @@ export default function UeberMich() {
   return (
     <>
       <Header />
-      <div ref={containerRef} dangerouslySetInnerHTML={{ __html: `<section id="hero">
+      <div ref={containerRef} className="ueber-mich-page bg-black text-white overflow-x-hidden antialiased" dangerouslySetInnerHTML={{ __html: `<section id="hero">
         <div class="pone-container">
             <div class="hero-grid">
 

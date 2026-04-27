@@ -1,12 +1,6 @@
-*,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
 
-        :root {
+
+        .ueber-mich-page {
             --blue: #004aad;
             --blue-m: #1a6fe8;
             --blue-l: #5b9cf6;
@@ -18,32 +12,18 @@
             --card-br: rgba(255, 255, 255, .07);
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
 
-        body {
-            background: #000;
-            color: #fff;
-            font-family: 'Poppins', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
+
+
 
         .pone-container {
             width: min(1080px, 92%);
             margin: 0 auto;
         }
 
-        img {
-            display: block;
-            max-width: 100%;
-        }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+
+
 
         /* Word reveal */
         .pone-word-wrap {
