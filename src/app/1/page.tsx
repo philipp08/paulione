@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './site.css';
+import { Header } from '@/components/landing/Header';
 
 // ─── Mock Visuals (SVG placeholders) ────────────────────────────────────────
 
@@ -197,53 +198,6 @@ function P1Cursor({ enabled, rootRef }: { enabled: boolean; rootRef: React.RefOb
   );
 }
 
-// ─── Nav ─────────────────────────────────────────────────────────────────────
-
-function P1Nav({ heroDark, onCtaClick }: { heroDark: boolean; onCtaClick: () => void }) {
-  const [scrolled, setScrolled] = useState(false);
-  const [overDark, setOverDark] = useState(heroDark);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 40);
-      const y = 60;
-      const sections = document.querySelectorAll('[data-nav-theme]');
-      let theme = heroDark ? 'dark' : 'light';
-      sections.forEach((s) => {
-        const r = s.getBoundingClientRect();
-        if (r.top <= y && r.bottom >= y) theme = s.getAttribute('data-nav-theme') || theme;
-      });
-      setOverDark(theme === 'dark');
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [heroDark]);
-
-  const links = [
-    { label: 'Arbeit', href: '#v1-arbeit' },
-    { label: 'Leistungen', href: '#v1-leistungen' },
-    { label: 'Studio', href: '#v1-studio' },
-    { label: 'Prozess', href: '#v1-prozess' },
-    { label: 'Kontakt', href: '#v1-kontakt' },
-  ];
-
-  const logo = overDark ? '/logo-negativ-transparent.png' : '/logo-positiv-transparent.png';
-
-  return (
-    <nav className={`p1-nav ${scrolled ? 'is-scrolled' : ''} ${overDark ? 'is-dark' : ''}`}>
-      <a className="p1-nav__brand" href="#v1-top" data-cursor="hover">
-        <img src={logo} alt="PauliONE" />
-      </a>
-      <ul className="p1-nav__links">
-        {links.map((l) => (
-          <li key={l.label}><a href={l.href} data-cursor="hover">{l.label}</a></li>
-        ))}
-      </ul>
-      <button className="p1-nav__cta" onClick={onCtaClick} data-cursor="hover">Anfragen</button>
-    </nav>
-  );
-}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
@@ -900,24 +854,14 @@ function P1Footer() {
 
 export default function DesignVariant1() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [heroDark] = useState(false);
-  const [heroHeadline] = useState('begeistert');
-  const [servicesDark] = useState(false);
-  const [cursorEnabled] = useState(true);
-  const [showMarquee] = useState(true);
-
-  const handleCta = useCallback(() => {
-    const el = document.getElementById('v1-kontakt');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, []);
 
   return (
     <div className="p1v" ref={rootRef} style={{ position: 'relative' }}>
-      <P1Cursor enabled={cursorEnabled} rootRef={rootRef} />
-      <P1Nav heroDark={heroDark} onCtaClick={handleCta} />
-      <P1Hero heroDark={heroDark} heroHeadline={heroHeadline} />
-      {showMarquee && <P1Marquee dark={heroDark} />}
-      <P1Services dark={servicesDark} />
+      <P1Cursor enabled={true} rootRef={rootRef} />
+      <Header />
+      <P1Hero heroDark={false} heroHeadline="begeistert" />
+      <P1Marquee dark={false} />
+      <P1Services dark={false} />
       <P1Pinned />
       <P1Portfolio />
       <P1HScroll />
