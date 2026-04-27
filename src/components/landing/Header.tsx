@@ -116,7 +116,7 @@ export function Header() {
             <img
               src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
               alt="PauliONE"
-              className="h-10 w-auto object-contain"
+              className="h-7 w-auto object-contain"
             />
           </Link>
 
@@ -239,12 +239,12 @@ export function Header() {
           }`}
         >
           {/* Top Bar (Always Visible) */}
-          <div className="flex items-center justify-between px-4 py-3 relative z-10 w-full">
+          <div className="flex items-center justify-between px-4 py-4 relative z-10 w-full">
             <Link href="/" className="flex items-center gap-3 pl-2 transition-transform hover:scale-[1.02] active:scale-[0.98]" onClick={() => setMobileOpen(false)}>
               <img
                 src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
                 alt="PauliONE"
-                className="h-8 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             </Link>
 
@@ -318,7 +318,7 @@ export function Header() {
                 }}
                 className="overflow-hidden w-full"
               >
-                <div className="flex flex-col px-6 pb-8 pt-2 w-full overflow-y-auto max-h-[calc(100dvh-72px)]">
+                <div className="flex flex-col px-6 pb-8 pt-0 w-full overflow-y-auto max-h-[calc(100dvh-72px)]">
                   {/* Divider line */}
                   <motion.div
                     initial={{ scaleX: 0 }}
