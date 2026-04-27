@@ -116,7 +116,7 @@ export function Header() {
             <img
               src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
               alt="PauliONE"
-              className="h-6 w-auto object-contain"
+              className="h-10 w-auto object-contain"
             />
           </Link>
 
@@ -244,7 +244,7 @@ export function Header() {
               <img
                 src="https://i.ibb.co/nMXYy81Y/Schwarz-transparent.png"
                 alt="PauliONE"
-                className="h-5 w-auto object-contain"
+                className="h-8 w-auto object-contain"
               />
             </Link>
 
@@ -451,7 +451,7 @@ export function Header() {
                animate={{ opacity: 1 }}
                exit={{ opacity: 0 }}
                transition={{ duration: 0.3 }}
-               className="fixed inset-0 bg-black/60 z-[50] xl:hidden"
+               className="fixed inset-0 bg-black/40 backdrop-blur-md z-[50] xl:hidden"
                onClick={() => setMobileOpen(false)}
             />
          )}
