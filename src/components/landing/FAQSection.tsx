@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FAQItem {
   question: string;
@@ -35,118 +36,107 @@ const FAQ_DATA: FAQItem[] = [
 ];
 
 export function FAQSection() {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const animateTitle = useCallback(() => {
-    const t = titleRef.current;
-    if (!t) return;
-    const ns: Node[] = [];
-    t.childNodes.forEach((n) => {
-      if (n.nodeType === Node.TEXT_NODE) {
-        (n.textContent || "").split(/(\s+)/).forEach((p) => {
-          if (/\S/.test(p)) {
-            const w = document.createElement("span");
-            w.style.cssText = "display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.05em;";
-            const i = document.createElement("span");
-            i.style.cssText = "display:inline-block;transform:translateY(110%);opacity:0;transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .5s ease;";
-            i.textContent = p;
-            w.appendChild(i);
-            ns.push(w);
-          } else if (p) { ns.push(document.createTextNode(p)); }
-        });
-      } else if (n.nodeName === "EM") {
-        const w = document.createElement("span");
-        w.style.cssText = "display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.05em;";
-        const i = document.createElement("span");
-        i.style.cssText = "display:inline-block;transform:translateY(110%);opacity:0;transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .5s ease;";
-        i.appendChild(n.cloneNode(true));
-        w.appendChild(i);
-        ns.push(w);
-        ns.push(document.createTextNode(" "));
-      }
-    });
-    t.innerHTML = "";
-    ns.forEach((n) => t.appendChild(n));
-  }, []);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-    function observe(target: Element | null, cb: (el: Element) => void, threshold = 0.15) {
-      if (!target) return;
-      const io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) { cb(e.target); io.unobserve(e.target); }
-          });
-        },
-        { threshold }
-      );
-      io.observe(target);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
     }
 
-    observe(el.querySelector("#faq-badge"), (e) => e.classList.add("faq-in"), 0.5);
-
-    animateTitle();
-    observe(el.querySelector("#faq-title"), (t) => {
-      t.querySelectorAll("span > span").forEach((w, i) => {
-        setTimeout(() => {
-          (w as HTMLElement).style.transform = "translateY(0)";
-          (w as HTMLElement).style.opacity = "1";
-        }, i * 90);
-      });
-    }, 0.3);
-
-    el.querySelectorAll("[data-faq]").forEach((item, i) => {
-      observe(item, (e) => {
-        setTimeout(() => e.classList.add("faq-in"), i * 80);
-      }, 0.05);
-    });
-  }, [animateTitle]);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="faq-root" ref={rootRef}>
+    <section className="faq-root" ref={containerRef}>
       <div className="faq-container">
         <div className="faq-head">
-          <div className="faq-badge" id="faq-badge">
+          <motion.div 
+            className="faq-badge"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+          >
             <span className="faq-badge-dot"></span>Häufige Fragen
-          </div>
-          <h2 className="faq-title" id="faq-title" ref={titleRef}>
-            Was Sie noch <em>wissen möchten.</em>
+          </motion.div>
+          <h2 className="faq-title">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              style={{ display: "inline-block" }}
+            >
+              Was Sie noch{" "}
+            </motion.span>
+            <motion.em
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              style={{ display: "inline-block", marginLeft: "0.2em" }}
+            >
+              wissen möchten.
+            </motion.em>
           </h2>
         </div>
-        <div className="faq-list" id="faq-list">
+
+        <div className="faq-list">
           {FAQ_DATA.map((item, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className={`faq-item${openIndex === idx ? " faq-open" : ""}`}
-              data-faq=""
+              className={`faq-item ${openIndex === idx ? "faq-open" : ""}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={isVisible ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
             >
-              <div
+              <button
                 className="faq-q"
                 onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpenIndex(openIndex === idx ? null : idx); } }}
+                aria-expanded={openIndex === idx}
               >
                 <span className="faq-q-text">{item.question}</span>
                 <div className="faq-icon">
-                  <svg viewBox="0 0 24 24">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
+                  <motion.svg 
+                    viewBox="0 0 24 24"
+                    animate={{ rotate: openIndex === idx ? 45 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                  </motion.svg>
                 </div>
-              </div>
-              <div className="faq-body">
-                <p dangerouslySetInnerHTML={{ __html: item.answer }} />
-              </div>
-            </div>
+              </button>
+
+              <AnimatePresence>
+                {openIndex === idx && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="faq-body-overflow"
+                  >
+                    <div className="faq-body-content">
+                      <p dangerouslySetInnerHTML={{ __html: item.answer }} />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
         </div>
       </div>
-    </div>
+
+    </section>
   );
 }
